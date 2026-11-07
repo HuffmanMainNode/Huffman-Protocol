@@ -129,3 +129,10 @@ def test_registry_rejects_missing_manifest(tmp_path: Path) -> None:
     )
     with pytest.raises(DocumentValidationError, match="does not exist"):
         validate_registry(registry)
+
+
+def test_duplicate_json_object_keys_are_rejected(tmp_path: Path) -> None:
+    path = tmp_path / "duplicate-keys.json"
+    path.write_text('{"id":"first","id":"second"}', encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="duplicate JSON object key"):
+        validate_manifest(path)
