@@ -44,3 +44,16 @@ huffman-protocol verify-evidence examples/evidence-package
 ```
 
 The fixture is intentionally marked `not-applicable`; it demonstrates package structure and artifact integrity only. It is not a claim that a conformance test was executed.
+
+## Resource limits and parser hardening
+
+The offline verifier rejects duplicate JSON object keys, symlinked evidence manifests, and oversized inputs. Version 0.1.0 enforces these default limits:
+
+- Evidence manifest: 4 MiB maximum.
+- Artifact count: 256 maximum.
+- Individual artifact: 128 MiB maximum.
+- Combined artifact bytes: 512 MiB maximum.
+- Test result records: 4,096 maximum.
+- Limitation records: 128 maximum.
+
+These are defensive local defaults, not protocol-level transfer limits. A future format version may define negotiated limits, but a manifest must never be allowed to raise the verifier's own safety ceilings.
