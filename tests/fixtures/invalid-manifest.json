@@ -1,0 +1,14 @@
+{
+  "manifest_version": "0.1.0",
+  "id": "INVALID ID",
+  "name": "Invalid Fixture",
+  "relationship": "magic",
+  "status": "certified",
+  "summary": "An intentionally invalid test fixture used to exercise schema rejection behavior.",
+  "source": {
+    "repository": "http://not-https.example.invalid/project",
+    "commit": "not-a-commit"
+  },
+  "capabilities": [],
+  "limitations": []
+}
