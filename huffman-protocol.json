@@ -42,8 +42,7 @@
     "remote-agent-coordination",
     "automatic-registry-crawling",
     "a2a-http-jsonrpc-task-exchange",
-    "a2a-agent-card-jws-verification",
-    "mcp-adapter"
+    "a2a-agent-card-jws-verification"
   ],
   "execution_policy": {
     "default_access": "read-only",
