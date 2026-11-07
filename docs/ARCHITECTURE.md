@@ -18,7 +18,7 @@ The current implementation covers offline manifest and registry validation plus 
 ## Trust boundaries
 
 - Registry content and evidence packages are untrusted input.
-- JSON parsers reject duplicate object keys rather than silently selecting one value.
+- JSON parsers reject duplicate object keys rather than silently selecting one value, enforce a 16 MiB document ceiling, and reject excessive nesting.
 - Evidence verification enforces fixed manifest, artifact-count, per-artifact, and total-artifact size ceilings.
 - Metadata and evidence validation do not access the network.
 - A manifest does not authorize code execution.
