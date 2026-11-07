@@ -1,14 +1,18 @@
+import importlib.util
 import json
 import sys
 from pathlib import Path
 
 import pytest
 
-pytest.importorskip("a2a.types")
-
 from huffman_protocol.a2a import validate_a2a_card
 from huffman_protocol.cli import main
 from huffman_protocol.validation import DocumentValidationError
+
+pytestmark = pytest.mark.skipif(
+    importlib.util.find_spec("a2a") is None,
+    reason="install the optional a2a extra to run A2A adapter tests",
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "examples" / "a2a-v1.0" / "agent-card.json"
