@@ -46,7 +46,7 @@ def test_valid_evidence_package_passes(tmp_path: Path) -> None:
 
 def test_modified_artifact_is_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
-    (pkg / "artifacts" / "result.txt").write_bytes(b"modified")
+    (pkg / "artifacts" / "result.txt").write_bytes(b"replaced test output")
     with pytest.raises(DocumentValidationError, match="SHA-256 mismatch"):
         verify_evidence(pkg)
 
