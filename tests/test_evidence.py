@@ -125,3 +125,15 @@ def test_duplicate_test_result_ids_are_rejected(tmp_path: Path) -> None:
     (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(DocumentValidationError, match="duplicate test result identifiers"):
         verify_evidence(pkg)
+
+
+
+def test_cli_verify_evidence_command_succeeds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from huffman_protocol.cli import main
+
+    package = make_package(tmp_path / "package")
+    monkeypatch.setattr("sys.argv", ["huffman-protocol", "verify-evidence", str(package)])
+    assert main() == 0
+    assert "VALID:" in capsys.readouterr().out
