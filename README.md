@@ -35,7 +35,8 @@ This repository is an early-stage project. It does not yet provide a security ce
 
 - [Project architecture](docs/ARCHITECTURE.md)
 - [Machine-readable manifest](specifications/manifest/README.md)
-- [Registry](registry/index.json)
+- [Registry index](registry/index.json)
+- [Registry guidance](registry/README.md)
 - [Conformance model](specifications/conformance/README.md)
 - [Evidence model](specifications/evidence/README.md)
 - [Schema versioning policy](specifications/VERSIONING.md)
