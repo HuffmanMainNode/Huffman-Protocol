@@ -11,6 +11,6 @@ Required distinctions:
 
 A registry entry must reference a canonical public non-fork repository and an exact 40-character Git commit SHA. A release tag is useful metadata but is mutable and cannot replace a pinned commit.
 
-The normative schema is packaged at src/hpack/schemas/manifest.schema.json. Validate locally after installing the package with its development dependencies using: hpack validate-manifest path/to/manifest.json
+The normative schema is packaged at src/huffman_protocol/schemas/manifest.schema.json. After installing the package and development dependencies, validate locally with: huffman-protocol validate-manifest path/to/manifest.json
 
 Validation is offline. It does not fetch a repository, execute code, verify ownership, or establish the truth of a manifest's claims. Unknown fields are rejected in version 0.1.0 to prevent silent ambiguity.
