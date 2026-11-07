@@ -1,0 +1,14 @@
+{
+  "manifest_version": "0.1.0",
+  "id": "example.protocol",
+  "name": "Example Protocol Fixture",
+  "relationship": "specification",
+  "status": "experimental",
+  "summary": "A test fixture used to verify the Huffman Protocol manifest schema and local validator behavior.",
+  "source": {
+    "repository": "https://github.com/example/example-protocol",
+    "commit": "0123456789abcdef0123456789abcdef01234567"
+  },
+  "capabilities": ["example-message-exchange"],
+  "limitations": ["This is test data and does not describe a real implementation."]
+}
