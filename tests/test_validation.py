@@ -65,3 +65,52 @@ def test_registry_path_traversal_is_rejected(tmp_path: Path) -> None:
     )
     with pytest.raises(DocumentValidationError, match="unsafe manifest path"):
         validate_registry(path)
+
+
+def test_registry_resolves_and_validates_manifest(tmp_path: Path) -> None:
+    entries_dir = tmp_path / "entries"
+    entries_dir.mkdir()
+    manifest = json.loads((ROOT / "tests" / "fixtures" / "valid-manifest.json").read_text())
+    (entries_dir / "example.json").write_text(json.dumps(manifest), encoding="utf-8")
+    registry = tmp_path / "index.json"
+    registry.write_text(
+        json.dumps({
+            "registry_version": "0.1.0",
+            "updated": "2026-11-06",
+            "entries": [{"id": manifest["id"], "manifest": "entries/example.json"}],
+        }),
+        encoding="utf-8",
+    )
+    validate_registry(registry)
+
+
+def test_registry_rejects_manifest_id_mismatch(tmp_path: Path) -> None:
+    entries_dir = tmp_path / "entries"
+    entries_dir.mkdir()
+    manifest = json.loads((ROOT / "tests" / "fixtures" / "valid-manifest.json").read_text())
+    (entries_dir / "example.json").write_text(json.dumps(manifest), encoding="utf-8")
+    registry = tmp_path / "index.json"
+    registry.write_text(
+        json.dumps({
+            "registry_version": "0.1.0",
+            "updated": "2026-11-06",
+            "entries": [{"id": "different.protocol", "manifest": "entries/example.json"}],
+        }),
+        encoding="utf-8",
+    )
+    with pytest.raises(DocumentValidationError, match="does not match manifest id"):
+        validate_registry(registry)
+
+
+def test_registry_rejects_missing_manifest(tmp_path: Path) -> None:
+    registry = tmp_path / "index.json"
+    registry.write_text(
+        json.dumps({
+            "registry_version": "0.1.0",
+            "updated": "2026-11-06",
+            "entries": [{"id": "missing.protocol", "manifest": "entries/missing.json"}],
+        }),
+        encoding="utf-8",
+    )
+    with pytest.raises(DocumentValidationError, match="does not exist"):
+        validate_registry(registry)
