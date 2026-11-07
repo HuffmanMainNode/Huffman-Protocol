@@ -62,7 +62,9 @@ def _safe_artifact_path(root: Path, value: str, source: Path) -> Path:
         ) from exc
 
     if not resolved.is_file():
-        raise DocumentValidationError(f"{source}: artifact does not exist or is not a file: {value}")
+        raise DocumentValidationError(
+            f"{source}: artifact does not exist or is not a file: {value}"
+        )
     return resolved
 
 
@@ -74,15 +76,16 @@ def verify_evidence(package_dir: Path) -> None:
 
     manifest_path = root / "evidence.json"
     if manifest_path.is_symlink():
-        raise DocumentValidationError(f"{manifest_path}: evidence manifest symlinks are not allowed")
+        raise DocumentValidationError(
+            f"{manifest_path}: evidence manifest symlinks are not allowed"
+        )
     try:
         manifest_size = manifest_path.stat().st_size
     except OSError as exc:
         raise DocumentValidationError(f"{manifest_path}: {exc}") from exc
     if manifest_size > MAX_EVIDENCE_MANIFEST_BYTES:
         raise DocumentValidationError(
-            f"{manifest_path}: evidence manifest exceeds "
-            f"{MAX_EVIDENCE_MANIFEST_BYTES} byte limit"
+            f"{manifest_path}: evidence manifest exceeds {MAX_EVIDENCE_MANIFEST_BYTES} byte limit"
         )
 
     document = _load_json(manifest_path)
