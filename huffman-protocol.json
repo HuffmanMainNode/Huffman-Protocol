@@ -8,7 +8,8 @@
   },
   "registry": {
     "index": "registry/index.json",
-    "schema": "src/huffman_protocol/schemas/registry.schema.json"
+    "schema": "src/huffman_protocol/schemas/registry.schema.json",
+    "readme": "registry/README.md"
   },
   "manifest_schema": "src/huffman_protocol/schemas/manifest.schema.json",
   "agent_instructions": "AGENTS.md",
@@ -72,7 +73,8 @@
     "manifest": "specifications/manifest/README.md",
     "conformance": "specifications/conformance/README.md",
     "evidence": "specifications/evidence/README.md",
-    "versioning": "specifications/VERSIONING.md"
+    "versioning": "specifications/VERSIONING.md",
+    "a2a": "specifications/a2a/README.md"
   },
   "runtime": {
     "mode": "local-library-and-cli",
