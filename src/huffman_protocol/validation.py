@@ -31,7 +31,9 @@ def _validate(document: Any, schema_name: str, source: Path) -> None:
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    errors = sorted(validator.iter_errors(document), key=lambda error: tuple(str(part) for part in error.path))
+    errors = sorted(
+        validator.iter_errors(document), key=lambda error: tuple(str(part) for part in error.path)
+    )
     if errors:
         details = []
         for error in errors:
