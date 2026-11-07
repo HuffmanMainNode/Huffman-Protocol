@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 
 MAX_JSON_DOCUMENT_BYTES = 16 * 1024 * 1024
+MAX_JSON_NESTING_DEPTH = 64
 
 
 class DocumentValidationError(ValueError):
@@ -26,6 +27,20 @@ def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
+def _check_json_nesting(document: Any, source: Path) -> None:
+    pending = [(document, 0)]
+    while pending:
+        value, depth = pending.pop()
+        if depth > MAX_JSON_NESTING_DEPTH:
+            raise DocumentValidationError(
+                f"{source}: JSON nesting exceeds {MAX_JSON_NESTING_DEPTH} levels"
+            )
+        if isinstance(value, dict):
+            pending.extend((child, depth + 1) for child in value.values())
+        elif isinstance(value, list):
+            pending.extend((child, depth + 1) for child in value)
+
+
 def _load_json(path: Path) -> Any:
     try:
         with path.open("rb") as handle:
@@ -34,7 +49,9 @@ def _load_json(path: Path) -> Any:
             raise DocumentValidationError(
                 f"{path}: JSON document exceeds {MAX_JSON_DOCUMENT_BYTES} byte limit"
             )
-        return json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_object)
+        document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_object)
+        _check_json_nesting(document, path)
+        return document
     except json.JSONDecodeError as exc:
         raise DocumentValidationError(
             f"{path}: invalid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}"
