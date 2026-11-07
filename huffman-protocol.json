@@ -63,5 +63,14 @@
     "conformance": "specifications/conformance/README.md",
     "evidence": "specifications/evidence/README.md",
     "versioning": "specifications/VERSIONING.md"
+  },
+  "runtime": {
+    "mode": "local-library-and-cli",
+    "server_required": false,
+    "github_required_at_runtime": false,
+    "validation_requires_network": false,
+    "opens_network_sockets": false,
+    "executes_third_party_code": false,
+    "agent_state_storage": "caller-managed-local-state"
   }
 }
