@@ -44,7 +44,9 @@ def test_invalid_json_is_rejected(tmp_path: Path) -> None:
 def test_invalid_registry_date_is_rejected(tmp_path: Path) -> None:
     path = tmp_path / "registry.json"
     path.write_text(
-        json.dumps({"registry_version": "0.1.0", "updated": "not-a-date", "entries": []}),
+        json.dumps(
+            {"registry_version": "0.1.0", "updated": "not-a-date", "entries": []}
+        ),
         encoding="utf-8",
     )
     with pytest.raises(DocumentValidationError, match="does not satisfy"):
@@ -58,7 +60,9 @@ def test_duplicate_registry_ids_are_rejected(tmp_path: Path) -> None:
         {"id": "same.protocol", "manifest": "entries/two.json"},
     ]
     path.write_text(
-        json.dumps({"registry_version": "0.1.0", "updated": "2026-11-06", "entries": entries}),
+        json.dumps(
+            {"registry_version": "0.1.0", "updated": "2026-11-06", "entries": entries}
+        ),
         encoding="utf-8",
     )
     with pytest.raises(DocumentValidationError, match="duplicate entry identifiers"):
@@ -69,7 +73,9 @@ def test_registry_path_traversal_is_rejected(tmp_path: Path) -> None:
     path = tmp_path / "registry.json"
     entry = {"id": "safe.protocol", "manifest": "../outside.json"}
     path.write_text(
-        json.dumps({"registry_version": "0.1.0", "updated": "2026-11-06", "entries": [entry]}),
+        json.dumps(
+            {"registry_version": "0.1.0", "updated": "2026-11-06", "entries": [entry]}
+        ),
         encoding="utf-8",
     )
     with pytest.raises(DocumentValidationError, match="unsafe manifest path"):
@@ -83,11 +89,13 @@ def test_registry_resolves_and_validates_manifest(tmp_path: Path) -> None:
     (entries_dir / "example.json").write_text(json.dumps(manifest), encoding="utf-8")
     registry = tmp_path / "index.json"
     registry.write_text(
-        json.dumps({
-            "registry_version": "0.1.0",
-            "updated": "2026-11-06",
-            "entries": [{"id": manifest["id"], "manifest": "entries/example.json"}],
-        }),
+        json.dumps(
+            {
+                "registry_version": "0.1.0",
+                "updated": "2026-11-06",
+                "entries": [{"id": manifest["id"], "manifest": "entries/example.json"}],
+            }
+        ),
         encoding="utf-8",
     )
     validate_registry(registry)
@@ -100,11 +108,13 @@ def test_registry_rejects_manifest_id_mismatch(tmp_path: Path) -> None:
     (entries_dir / "example.json").write_text(json.dumps(manifest), encoding="utf-8")
     registry = tmp_path / "index.json"
     registry.write_text(
-        json.dumps({
-            "registry_version": "0.1.0",
-            "updated": "2026-11-06",
-            "entries": [{"id": "different.protocol", "manifest": "entries/example.json"}],
-        }),
+        json.dumps(
+            {
+                "registry_version": "0.1.0",
+                "updated": "2026-11-06",
+                "entries": [{"id": "different.protocol", "manifest": "entries/example.json"}],
+            }
+        ),
         encoding="utf-8",
     )
     with pytest.raises(DocumentValidationError, match="does not match manifest id"):
@@ -114,11 +124,13 @@ def test_registry_rejects_manifest_id_mismatch(tmp_path: Path) -> None:
 def test_registry_rejects_missing_manifest(tmp_path: Path) -> None:
     registry = tmp_path / "index.json"
     registry.write_text(
-        json.dumps({
-            "registry_version": "0.1.0",
-            "updated": "2026-11-06",
-            "entries": [{"id": "missing.protocol", "manifest": "entries/missing.json"}],
-        }),
+        json.dumps(
+            {
+                "registry_version": "0.1.0",
+                "updated": "2026-11-06",
+                "entries": [{"id": "missing.protocol", "manifest": "entries/missing.json"}],
+            }
+        ),
         encoding="utf-8",
     )
     with pytest.raises(DocumentValidationError, match="does not exist"):
