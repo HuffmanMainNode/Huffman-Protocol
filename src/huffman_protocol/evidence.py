@@ -26,13 +26,11 @@ def _validate_evidence(document: Any, source: Path) -> None:
         details = []
         for error in errors:
             location = "$" + "".join(
-                f"[{part}]" if isinstance(part, int) else f".{part}"
-                for part in error.absolute_path
+                f"[{part}]" if isinstance(part, int) else f".{part}" for part in error.absolute_path
             )
             details.append(f"{location}: {error.message}")
         raise DocumentValidationError(
-            f"{source}: evidence does not satisfy evidence.schema.json:\n- "
-            + "\n- ".join(details)
+            f"{source}: evidence does not satisfy evidence.schema.json:\n- " + "\n- ".join(details)
         )
 
 
@@ -58,9 +56,7 @@ def _safe_artifact_path(root: Path, value: str, source: Path) -> Path:
         ) from exc
 
     if not resolved.is_file():
-        raise DocumentValidationError(
-            f"{source}: artifact does not exist or is not a file: {value}"
-        )
+        raise DocumentValidationError(f"{source}: artifact does not exist or is not a file: {value}")
     return resolved
 
 
@@ -68,9 +64,7 @@ def verify_evidence(package_dir: Path) -> None:
     """Verify evidence.json and listed SHA-256 artifacts without network or code execution."""
     root = package_dir.resolve()
     if not root.is_dir():
-        raise DocumentValidationError(
-            f"{package_dir}: evidence package directory does not exist"
-        )
+        raise DocumentValidationError(f"{package_dir}: evidence package directory does not exist")
 
     manifest_path = root / "evidence.json"
     document = _load_json(manifest_path)
@@ -78,9 +72,7 @@ def verify_evidence(package_dir: Path) -> None:
 
     result_ids = [result["test_id"] for result in document["results"]]
     if len(result_ids) != len(set(result_ids)):
-        raise DocumentValidationError(
-            f"{manifest_path}: duplicate test result identifiers"
-        )
+        raise DocumentValidationError(f"{manifest_path}: duplicate test result identifiers")
 
     seen_paths: set[str] = set()
     for artifact in document["artifacts"]:
