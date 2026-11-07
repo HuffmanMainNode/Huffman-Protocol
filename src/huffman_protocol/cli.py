@@ -1,4 +1,4 @@
-"""Command-line interface for local metadata validation."""
+"""Command-line interface for local metadata and evidence validation."""
 
 from __future__ import annotations
 
@@ -22,12 +22,25 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
-    manifest = commands.add_parser("validate-manifest", help="validate one manifest JSON file")
+
+    manifest = commands.add_parser(
+        "validate-manifest", help="validate one manifest JSON file"
+    )
     manifest.add_argument("path", type=Path)
-    registry = commands.add_parser("validate-registry", help="validate a registry index JSON file")
+
+    registry = commands.add_parser(
+        "validate-registry", help="validate a registry index JSON file"
+    )
     registry.add_argument("path", type=Path)
-    evidence = commands.add_parser("verify-evidence", help="verify an offline H-PACK evidence package")
-    evidence.add_argument("path", type=Path, help="directory containing evidence.json and its artifacts")
+
+    evidence = commands.add_parser(
+        "verify-evidence", help="verify an offline H-PACK evidence package"
+    )
+    evidence.add_argument(
+        "path",
+        type=Path,
+        help="directory containing evidence.json and its artifacts",
+    )
     return parser
 
 
@@ -43,6 +56,7 @@ def main() -> int:
     except DocumentValidationError as exc:
         print(f"INVALID: {exc}", file=sys.stderr)
         return 1
+
     print(f"VALID: {args.path}")
     return 0
 
