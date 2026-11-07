@@ -47,7 +47,7 @@ The fixture is intentionally marked `not-applicable`; it demonstrates package st
 
 ## Resource limits and parser hardening
 
-The offline verifier rejects duplicate JSON object keys, symlinked evidence manifests, excessive JSON nesting, and oversized inputs. All metadata JSON documents are limited to 16 MiB. Version 0.1.0 evidence packages enforce these additional default limits:
+The offline verifier rejects duplicate JSON object keys, symlinked evidence manifests, excessive JSON nesting, and oversized inputs. All metadata JSON documents are limited to 16 MiB and nesting is limited to 64 levels. Version 0.1.0 evidence packages enforce these additional default limits:
 
 - Evidence manifest: 4 MiB maximum.
 - Artifact count: 256 maximum.
