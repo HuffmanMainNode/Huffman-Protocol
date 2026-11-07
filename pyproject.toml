@@ -15,13 +15,13 @@ dependencies = ["jsonschema>=4.23,<5"]
 dev = ["pytest>=8.3,<9", "ruff>=0.8,<1"]
 
 [project.scripts]
-hpack = "hpack.cli:main"
+huffman-protocol = "huffman_protocol.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-hpack = ["schemas/*.json"]
+huffman_protocol = ["schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
