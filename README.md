@@ -38,6 +38,7 @@ This repository is an early-stage project. It does not yet provide a security ce
 - [Registry](registry/index.json)
 - [Conformance model](specifications/conformance/README.md)
 - [Evidence model](specifications/evidence/README.md)
+- [Schema versioning policy](specifications/VERSIONING.md)
 - [Agent instructions](AGENTS.md)
 - [Governance](GOVERNANCE.md)
 - [Security policy](SECURITY.md)
@@ -50,18 +51,39 @@ This repository is the specification, registry, tooling, and verification home. 
 
 Forks are not automatically catalogued. Every entry requires a relevance, visibility, licensing, provenance, and content review.
 
-## Local validation
+## Run locally
 
-Install the package and development tools, then validate the registry and run the tests:
+GitHub is the source repository and distribution point, not a required runtime host. The toolkit runs on the machine that installs it. Metadata and evidence validation are offline and require no Huffman Protocol server, account, API key, or hosted service.
+
+Clone and install the runtime package:
+
+```sh
+git clone https://github.com/HuffmanMainNode/Huffman-Protocol.git
+cd Huffman-Protocol
+python -m venv .venv
+# Linux/macOS: source .venv/bin/activate
+# Windows PowerShell: .venv\\Scripts\\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install .
+huffman-protocol --help
+huffman-protocol validate-registry registry/index.json
+huffman-protocol verify-evidence examples/evidence-package
+```
+
+For development and tests, install the optional development dependencies:
 
 ```sh
 python -m pip install -e ".[dev]"
-huffman-protocol validate-registry registry/index.json
-huffman-protocol verify-evidence path/to/evidence-package
 python -m pytest
+ruff format --check .
+ruff check .
 ```
 
-The validator is offline. It validates schemas, manifest references, identifier consistency, and safe relative paths. It does not fetch or execute upstream code.
+The validator is offline. It validates schemas, manifest references, identifier consistency, and safe relative paths. Evidence verification validates the evidence schema and local artifact digests. Neither operation fetches or executes upstream code.
+
+## Example evidence package
+
+A deliberately non-claiming example is available at [examples/evidence-package](examples/evidence-package). It demonstrates the file layout and digest format; its result is marked `not-applicable` because it does not claim a test was executed.
 
 ## Current limitations
 
