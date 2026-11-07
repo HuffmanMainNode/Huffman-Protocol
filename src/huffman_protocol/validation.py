@@ -38,13 +38,11 @@ def _validate(document: Any, schema_name: str, source: Path) -> None:
         details = []
         for error in errors:
             location = "$" + "".join(
-                f"[{part}]" if isinstance(part, int) else f".{part}"
-                for part in error.absolute_path
+                f"[{part}]" if isinstance(part, int) else f".{part}" for part in error.absolute_path
             )
             details.append(f"{location}: {error.message}")
         raise DocumentValidationError(
-            f"{source}: document does not satisfy {schema_name}:\n- "
-            + "\n- ".join(details)
+            f"{source}: document does not satisfy {schema_name}:\n- " + "\n- ".join(details)
         )
 
 

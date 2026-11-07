@@ -1,4 +1,4 @@
-"""Command-line interface for local metadata validation."""
+"""Command-line interface for local metadata and evidence validation."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from huffman_protocol import __version__
+from huffman_protocol.evidence import verify_evidence
 from huffman_protocol.validation import (
     DocumentValidationError,
     validate_manifest,
@@ -21,10 +22,21 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
+
     manifest = commands.add_parser("validate-manifest", help="validate one manifest JSON file")
     manifest.add_argument("path", type=Path)
+
     registry = commands.add_parser("validate-registry", help="validate a registry index JSON file")
     registry.add_argument("path", type=Path)
+
+    evidence = commands.add_parser(
+        "verify-evidence", help="verify an offline H-PACK evidence package"
+    )
+    evidence.add_argument(
+        "path",
+        type=Path,
+        help="directory containing evidence.json and its artifacts",
+    )
     return parser
 
 
@@ -33,11 +45,14 @@ def main() -> int:
     try:
         if args.command == "validate-manifest":
             validate_manifest(args.path)
-        else:
+        elif args.command == "validate-registry":
             validate_registry(args.path)
+        else:
+            verify_evidence(args.path)
     except DocumentValidationError as exc:
         print(f"INVALID: {exc}", file=sys.stderr)
         return 1
+
     print(f"VALID: {args.path}")
     return 0
 
