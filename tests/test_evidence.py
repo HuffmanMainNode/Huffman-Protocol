@@ -135,3 +135,23 @@ def test_cli_verify_evidence_command_succeeds(
     monkeypatch.setattr("sys.argv", ["huffman-protocol", "verify-evidence", str(package)])
     assert main() == 0
     assert "VALID:" in capsys.readouterr().out
+
+
+
+def test_equivalent_artifact_paths_are_rejected(tmp_path: Path) -> None:
+    pkg = make_package(tmp_path / "package")
+    document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
+    alias = dict(document["artifacts"][0])
+    alias["path"] = "artifacts/./result.txt"
+    document["artifacts"].append(alias)
+    (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="duplicate artifact target"):
+        verify_evidence(pkg)
+
+
+def test_invalid_evidence_json_is_rejected(tmp_path: Path) -> None:
+    pkg = tmp_path / "package"
+    pkg.mkdir()
+    (pkg / "evidence.json").write_text('{"evidence_version":', encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="invalid JSON"):
+        verify_evidence(pkg)
