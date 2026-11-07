@@ -31,6 +31,8 @@ This repository is an early-stage project. It does not yet provide a security ce
 
 ## Start here
 
+- [Machine-readable discovery descriptor](huffman-protocol.json)
+
 - [Project architecture](docs/ARCHITECTURE.md)
 - [Machine-readable manifest](specifications/manifest/README.md)
 - [Registry](registry/index.json)
@@ -47,6 +49,18 @@ This repository is an early-stage project. It does not yet provide a security ce
 This repository is the specification, registry, tooling, and verification home. Upstream projects retain ownership of their source code and releases. Registry entries reference canonical repositories and reviewed immutable revisions; they do not copy upstream code.
 
 Forks are not automatically catalogued. Every entry requires a relevance, visibility, licensing, provenance, and content review.
+
+## Local validation
+
+Install the package and development tools, then validate the registry and run the tests:
+
+```sh
+python -m pip install -e ".[dev]"
+huffman-protocol validate-registry registry/index.json
+python -m pytest
+```
+
+The validator is offline. It validates schemas, manifest references, identifier consistency, and safe relative paths. It does not fetch or execute upstream code.
 
 ## Current limitations
 
