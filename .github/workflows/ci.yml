@@ -41,7 +41,7 @@ jobs:
       - name: Check formatting
         run: ruff format --check .
       - name: Lint
-        run: ruff check --fix --diff .
+        run: ruff check .
       - name: Build source and wheel distributions
         run: |
           python -m pip install build
