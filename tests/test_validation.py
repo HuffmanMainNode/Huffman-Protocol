@@ -20,6 +20,15 @@ def test_manifest_fixture_is_valid() -> None:
     validate_manifest(ROOT / "tests" / "fixtures" / "valid-manifest.json")
 
 
+def test_independent_verification_requires_evidence(tmp_path: Path) -> None:
+    manifest = json.loads((ROOT / "tests" / "fixtures" / "valid-manifest.json").read_text())
+    manifest["verification"] = {"status": "independently-verified"}
+    path = tmp_path / "unsupported-claim.json"
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="does not satisfy"):
+        validate_manifest(path)
+
+
 def test_invalid_manifest_is_rejected() -> None:
     with pytest.raises(DocumentValidationError, match="does not satisfy"):
         validate_manifest(ROOT / "tests" / "fixtures" / "invalid-manifest.json")
