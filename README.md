@@ -57,6 +57,7 @@ Install the package and development tools, then validate the registry and run th
 ```sh
 python -m pip install -e ".[dev]"
 huffman-protocol validate-registry registry/index.json
+huffman-protocol verify-evidence path/to/evidence-package
 python -m pytest
 ```
 
@@ -65,6 +66,7 @@ The validator is offline. It validates schemas, manifest references, identifier 
 ## Current limitations
 
 - The registry and toolkit are experimental.
+- H-PACK can verify local evidence package structure and SHA-256 artifact integrity; it does not authenticate publishers, verify signatures, or rerun tests.
 - No external implementation has yet been certified or independently verified by this project.
 - Compatibility is never inferred from a manifest alone.
 - Test reports are scoped evidence, not blanket security attestations.
