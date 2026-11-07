@@ -1,4 +1,5 @@
 """Offline integrity verification for H-PACK evidence packages."""
+
 from __future__ import annotations
 
 import hashlib
@@ -17,7 +18,10 @@ def _validate_evidence(document: Any, source: Path) -> None:
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    errors = sorted(validator.iter_errors(document), key=lambda error: tuple(str(part) for part in error.path))
+    errors = sorted(
+        validator.iter_errors(document),
+        key=lambda error: tuple(str(part) for part in error.path),
+    )
     if errors:
         details = []
         for error in errors:
@@ -36,11 +40,15 @@ def _safe_artifact_path(root: Path, value: str, source: Path) -> Path:
     relative = Path(value)
     if relative.is_absolute() or ".." in relative.parts or "\\\\" in value:
         raise DocumentValidationError(f"{source}: unsafe artifact path: {value}")
+
     candidate = root
     for part in relative.parts:
         candidate = candidate / part
         if candidate.is_symlink():
-            raise DocumentValidationError(f"{source}: symlink artifact paths are not allowed: {value}")
+            raise DocumentValidationError(
+                f"{source}: symlink artifact paths are not allowed: {value}"
+            )
+
     resolved = candidate.resolve()
     try:
         resolved.relative_to(root)
@@ -48,8 +56,11 @@ def _safe_artifact_path(root: Path, value: str, source: Path) -> Path:
         raise DocumentValidationError(
             f"{source}: artifact resolves outside evidence package: {value}"
         ) from exc
+
     if not resolved.is_file():
-        raise DocumentValidationError(f"{source}: artifact does not exist or is not a file: {value}")
+        raise DocumentValidationError(
+            f"{source}: artifact does not exist or is not a file: {value}"
+        )
     return resolved
 
 
@@ -57,21 +68,29 @@ def verify_evidence(package_dir: Path) -> None:
     """Verify evidence.json and listed SHA-256 artifacts without network or code execution."""
     root = package_dir.resolve()
     if not root.is_dir():
-        raise DocumentValidationError(f"{package_dir}: evidence package directory does not exist")
+        raise DocumentValidationError(
+            f"{package_dir}: evidence package directory does not exist"
+        )
+
     manifest_path = root / "evidence.json"
     document = _load_json(manifest_path)
     _validate_evidence(document, manifest_path)
+
     seen_paths: set[str] = set()
     for artifact in document["artifacts"]:
         relative_path = artifact["path"]
         if relative_path in seen_paths:
-            raise DocumentValidationError(f"{manifest_path}: duplicate artifact path: {relative_path}")
+            raise DocumentValidationError(
+                f"{manifest_path}: duplicate artifact path: {relative_path}"
+            )
         seen_paths.add(relative_path)
+
         artifact_path = _safe_artifact_path(root, relative_path, manifest_path)
         digest = hashlib.sha256()
         with artifact_path.open("rb") as handle:
             for chunk in iter(lambda: handle.read(1024 * 1024), b""):
                 digest.update(chunk)
+
         actual = digest.hexdigest()
         if actual != artifact["sha256"]:
             raise DocumentValidationError(
