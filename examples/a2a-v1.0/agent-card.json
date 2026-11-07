@@ -1,0 +1,37 @@
+{
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json"
+  ],
+  "description": "Illustrative A2A 1.0 AgentCard used for offline structural validation.",
+  "name": "Huffman Protocol A2A Validation Fixture",
+  "skills": [
+    {
+      "id": "protocol-card-validation",
+      "name": "Protocol Card Validation",
+      "description": "Validates local protocol metadata without network access.",
+      "tags": [
+        "validation",
+        "protocol",
+        "offline"
+      ],
+      "examples": [
+        "Validate a local A2A AgentCard."
+      ]
+    }
+  ],
+  "supportedInterfaces": [
+    {
+      "url": "https://agent.example.invalid/a2a",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "version": "0.1.0"
+}
