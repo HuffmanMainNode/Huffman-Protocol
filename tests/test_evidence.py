@@ -75,7 +75,7 @@ def test_duplicate_artifact_paths_are_rejected(tmp_path: Path) -> None:
     document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
     document["artifacts"].append(document["artifacts"][0])
     (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
-    with pytest.raises(DocumentValidationError, match="duplicate artifact path"):
+    with pytest.raises(DocumentValidationError, match="duplicate artifact target"):
         verify_evidence(pkg)
 
 
