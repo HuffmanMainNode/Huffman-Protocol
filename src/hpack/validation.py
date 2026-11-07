@@ -7,7 +7,7 @@ from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 
 
 class DocumentValidationError(ValueError):
@@ -30,7 +30,7 @@ def _validate(document: Any, schema_name: str, source: Path) -> None:
     schema_path = files("hpack").joinpath("schemas", schema_name)
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
-    validator = Draft202012Validator(schema)
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(document), key=lambda error: list(error.path))
     if errors:
         details = []
@@ -53,4 +53,16 @@ def validate_manifest(path: Path) -> None:
 
 def validate_registry(path: Path) -> None:
     """Validate the registry index without fetching referenced repositories."""
-    _validate(_load_json(path), "registry.schema.json", path)
+    document = _load_json(path)
+    _validate(document, "registry.schema.json", path)
+    entries = document["entries"]
+    identifiers = [entry["id"] for entry in entries]
+    manifests = [entry["manifest"] for entry in entries]
+    if len(identifiers) != len(set(identifiers)):
+        raise DocumentValidationError(f"{path}: registry contains duplicate entry identifiers")
+    if len(manifests) != len(set(manifests)):
+        raise DocumentValidationError(f"{path}: registry contains duplicate manifest paths")
+    for manifest in manifests:
+        parts = Path(manifest).parts
+        if Path(manifest).is_absolute() or ".." in parts or "\\" in manifest:
+            raise DocumentValidationError(f"{path}: unsafe manifest path: {manifest}")
