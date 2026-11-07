@@ -23,9 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
 
-    manifest = commands.add_parser(
-        "validate-manifest", help="validate one manifest JSON file"
-    )
+    manifest = commands.add_parser("validate-manifest", help="validate one manifest JSON file")
     manifest.add_argument("path", type=Path)
 
     registry = commands.add_parser("validate-registry", help="validate a registry index JSON file")
