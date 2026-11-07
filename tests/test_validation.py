@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from huffman_protocol.validation import (
+    MAX_JSON_DOCUMENT_BYTES,
     DocumentValidationError,
     validate_manifest,
     validate_registry,
@@ -135,4 +136,19 @@ def test_duplicate_json_object_keys_are_rejected(tmp_path: Path) -> None:
     path = tmp_path / "duplicate-keys.json"
     path.write_text('{"id":"first","id":"second"}', encoding="utf-8")
     with pytest.raises(DocumentValidationError, match="duplicate JSON object key"):
+        validate_manifest(path)
+
+
+def test_oversized_metadata_json_is_rejected(tmp_path: Path) -> None:
+    path = tmp_path / "oversized.json"
+    with path.open("wb") as handle:
+        handle.truncate(MAX_JSON_DOCUMENT_BYTES + 1)
+    with pytest.raises(DocumentValidationError, match="JSON document exceeds"):
+        validate_manifest(path)
+
+
+def test_excessively_nested_json_is_rejected(tmp_path: Path) -> None:
+    path = tmp_path / "deep.json"
+    path.write_text("[" * 3000 + "0" + "]" * 3000, encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="nesting exceeds"):
         validate_manifest(path)
