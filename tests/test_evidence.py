@@ -16,11 +16,25 @@ def make_package(root: Path, artifact: bytes = b"captured test output") -> Path:
         "evidence_version": "0.1.0",
         "id": "example.evidence",
         "created_at": "2026-11-06T12:00:00Z",
-        "subject": {"id": "example.protocol", "repository": "https://example.org/protocol", "commit": "a" * 40},
-        "test_suite": {"id": "example.conformance", "version": "0.1.0", "revision": "b" * 40},
+        "subject": {
+            "id": "example.protocol",
+            "repository": "https://example.org/protocol",
+            "commit": "a" * 40,
+        },
+        "test_suite": {
+            "id": "example.conformance",
+            "version": "0.1.0",
+            "revision": "b" * 40,
+        },
         "results": [{"test_id": "vector-001", "outcome": "pass"}],
-        "artifacts": [{"path": "artifacts/result.txt", "sha256": hashlib.sha256(artifact).hexdigest(), "size_bytes": len(artifact)}],
-        "limitations": ["This package does not establish publisher identity."]
+        "artifacts": [
+            {
+                "path": "artifacts/result.txt",
+                "sha256": hashlib.sha256(artifact).hexdigest(),
+                "size_bytes": len(artifact),
+            }
+        ],
+        "limitations": ["This package does not establish publisher identity."],
     }
     (root / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
     return root
@@ -49,7 +63,10 @@ def test_parent_traversal_is_rejected(tmp_path: Path) -> None:
     document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
     document["artifacts"][0]["path"] = "../outside.txt"
     (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
-    with pytest.raises(DocumentValidationError, match="does not satisfy|unsafe artifact path"):
+    with pytest.raises(
+        DocumentValidationError,
+        match="does not satisfy|unsafe artifact path",
+    ):
         verify_evidence(pkg)
 
 
@@ -67,10 +84,12 @@ def test_symlink_artifact_is_rejected(tmp_path: Path) -> None:
     outside = tmp_path / "outside.txt"
     outside.write_text("outside", encoding="utf-8")
     (pkg / "artifacts" / "linked.txt").symlink_to(outside)
+
     document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
     document["artifacts"][0]["path"] = "artifacts/linked.txt"
     document["artifacts"][0]["sha256"] = hashlib.sha256(b"outside").hexdigest()
     (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
+
     with pytest.raises(DocumentValidationError, match="symlink artifact paths"):
         verify_evidence(pkg)
 
