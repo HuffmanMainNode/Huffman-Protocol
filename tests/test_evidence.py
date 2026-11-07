@@ -4,7 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from huffman_protocol.evidence import verify_evidence
+from huffman_protocol.evidence import (
+    MAX_EVIDENCE_ARTIFACT_BYTES,
+    MAX_EVIDENCE_MANIFEST_BYTES,
+    verify_evidence,
+)
 from huffman_protocol.validation import DocumentValidationError
 
 
@@ -153,4 +157,43 @@ def test_invalid_evidence_json_is_rejected(tmp_path: Path) -> None:
     pkg.mkdir()
     (pkg / "evidence.json").write_text('{"evidence_version":', encoding="utf-8")
     with pytest.raises(DocumentValidationError, match="invalid JSON"):
+        verify_evidence(pkg)
+
+
+def test_duplicate_json_object_keys_are_rejected(tmp_path: Path) -> None:
+    pkg = make_package(tmp_path / "package")
+    manifest = pkg / "evidence.json"
+    manifest.write_text(
+        '{"evidence_version":"0.1.0","evidence_version":"0.1.0"}',
+        encoding="utf-8",
+    )
+    with pytest.raises(DocumentValidationError, match="duplicate JSON object key"):
+        verify_evidence(pkg)
+
+
+def test_symlink_evidence_manifest_is_rejected(tmp_path: Path) -> None:
+    pkg = make_package(tmp_path / "package")
+    manifest = pkg / "evidence.json"
+    external_manifest = tmp_path / "external-evidence.json"
+    manifest.replace(external_manifest)
+    manifest.symlink_to(external_manifest)
+    with pytest.raises(DocumentValidationError, match="manifest symlinks"):
+        verify_evidence(pkg)
+
+
+def test_oversized_evidence_manifest_is_rejected(tmp_path: Path) -> None:
+    pkg = tmp_path / "package"
+    pkg.mkdir()
+    manifest = pkg / "evidence.json"
+    manifest.write_bytes(b" " * (MAX_EVIDENCE_MANIFEST_BYTES + 1))
+    with pytest.raises(DocumentValidationError, match="manifest exceeds"):
+        verify_evidence(pkg)
+
+
+def test_oversized_artifact_is_rejected_before_hashing(tmp_path: Path) -> None:
+    pkg = make_package(tmp_path / "package")
+    artifact = pkg / "artifacts" / "result.txt"
+    with artifact.open("r+b") as handle:
+        handle.truncate(MAX_EVIDENCE_ARTIFACT_BYTES + 1)
+    with pytest.raises(DocumentValidationError, match="artifact exceeds"):
         verify_evidence(pkg)

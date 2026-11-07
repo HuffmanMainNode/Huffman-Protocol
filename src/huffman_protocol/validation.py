@@ -9,19 +9,56 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+MAX_JSON_DOCUMENT_BYTES = 16 * 1024 * 1024
+MAX_JSON_NESTING_DEPTH = 64
+
 
 class DocumentValidationError(ValueError):
     """Raised when a document is invalid against its published schema."""
 
 
+def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise DocumentValidationError(f"duplicate JSON object key: {key!r}")
+        result[key] = value
+    return result
+
+
+def _check_json_nesting(document: Any, source: Path) -> None:
+    pending = [(document, 0)]
+    while pending:
+        value, depth = pending.pop()
+        if depth > MAX_JSON_NESTING_DEPTH:
+            raise DocumentValidationError(
+                f"{source}: JSON nesting exceeds {MAX_JSON_NESTING_DEPTH} levels"
+            )
+        if isinstance(value, dict):
+            pending.extend((child, depth + 1) for child in value.values())
+        elif isinstance(value, list):
+            pending.extend((child, depth + 1) for child in value)
+
+
 def _load_json(path: Path) -> Any:
     try:
-        with path.open("r", encoding="utf-8") as handle:
-            return json.load(handle)
+        with path.open("rb") as handle:
+            raw = handle.read(MAX_JSON_DOCUMENT_BYTES + 1)
+        if len(raw) > MAX_JSON_DOCUMENT_BYTES:
+            raise DocumentValidationError(
+                f"{path}: JSON document exceeds {MAX_JSON_DOCUMENT_BYTES} byte limit"
+            )
+        document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_object)
+        _check_json_nesting(document, path)
+        return document
     except json.JSONDecodeError as exc:
         raise DocumentValidationError(
             f"{path}: invalid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}"
         ) from exc
+    except UnicodeError as exc:
+        raise DocumentValidationError(f"{path}: JSON is not valid UTF-8: {exc}") from exc
+    except RecursionError as exc:
+        raise DocumentValidationError(f"{path}: JSON nesting exceeds parser limits") from exc
     except OSError as exc:
         raise DocumentValidationError(f"{path}: {exc}") from exc
 

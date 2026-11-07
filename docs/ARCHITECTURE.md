@@ -13,11 +13,13 @@ Huffman Protocol has four independently versioned concerns:
 
 Registry index -> Manifest -> Schema validation -> Candidate selection -> Conformance profile -> Approved test environment -> Structured results -> Evidence package -> Independent verification.
 
-The current implementation covers offline manifest and registry validation plus offline evidence-package schema and artifact-integrity verification. It does not execute conformance tests, rerun test suites, verify signatures, or establish publisher identity. Later stages are design targets and must not be described as implemented until code and tests exist.
+The current implementation covers offline manifest and registry validation plus offline evidence-package schema and artifact-integrity verification. Parsing rejects duplicate JSON keys; evidence inputs are bounded by fixed resource ceilings and symlinked manifests are rejected. It does not execute conformance tests, rerun test suites, verify signatures, or establish publisher identity. Later stages are design targets and must not be described as implemented until code and tests exist.
 
 ## Trust boundaries
 
 - Registry content and evidence packages are untrusted input.
+- JSON parsers reject duplicate object keys rather than silently selecting one value, enforce a 16 MiB document ceiling, and reject excessive nesting.
+- Evidence verification enforces fixed manifest, artifact-count, per-artifact, and total-artifact size ceilings.
 - Metadata and evidence validation do not access the network.
 - A manifest does not authorize code execution.
 - A valid evidence digest establishes consistency with the digest recorded in that same package, not the truth of the test claim or the identity of its publisher.
