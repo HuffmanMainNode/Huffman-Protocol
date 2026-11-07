@@ -7,6 +7,7 @@ import pytest
 from huffman_protocol.evidence import verify_evidence
 from huffman_protocol.validation import DocumentValidationError
 
+
 def make_package(root: Path, artifact: bytes = b"captured test output") -> Path:
     root.mkdir()
     (root / "artifacts").mkdir()
@@ -38,8 +39,10 @@ def make_package(root: Path, artifact: bytes = b"captured test output") -> Path:
     (root / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
     return root
 
+
 def test_valid_evidence_package_passes(tmp_path: Path) -> None:
     verify_evidence(make_package(tmp_path / "package"))
+
 
 def test_modified_artifact_is_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
@@ -47,11 +50,13 @@ def test_modified_artifact_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(DocumentValidationError, match="SHA-256 mismatch"):
         verify_evidence(pkg)
 
+
 def test_missing_artifact_is_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
     (pkg / "artifacts" / "result.txt").unlink()
     with pytest.raises(DocumentValidationError, match="does not exist"):
         verify_evidence(pkg)
+
 
 def test_parent_traversal_is_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
@@ -64,6 +69,7 @@ def test_parent_traversal_is_rejected(tmp_path: Path) -> None:
     ):
         verify_evidence(pkg)
 
+
 def test_duplicate_artifact_paths_are_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
     document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
@@ -71,6 +77,7 @@ def test_duplicate_artifact_paths_are_rejected(tmp_path: Path) -> None:
     (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(DocumentValidationError, match="duplicate artifact path"):
         verify_evidence(pkg)
+
 
 def test_symlink_artifact_is_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
@@ -86,6 +93,7 @@ def test_symlink_artifact_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(DocumentValidationError, match="symlink artifact paths"):
         verify_evidence(pkg)
 
+
 def test_invalid_subject_revision_is_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
     document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
@@ -94,9 +102,11 @@ def test_invalid_subject_revision_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(DocumentValidationError, match="does not satisfy"):
         verify_evidence(pkg)
 
+
 def test_missing_package_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(DocumentValidationError, match="directory does not exist"):
         verify_evidence(tmp_path / "missing")
+
 
 def test_declared_artifact_size_mismatch_is_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
@@ -106,6 +116,7 @@ def test_declared_artifact_size_mismatch_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(DocumentValidationError, match="size mismatch"):
         verify_evidence(pkg)
 
+
 def test_duplicate_test_result_ids_are_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
     document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
@@ -113,6 +124,7 @@ def test_duplicate_test_result_ids_are_rejected(tmp_path: Path) -> None:
     (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(DocumentValidationError, match="duplicate test result identifiers"):
         verify_evidence(pkg)
+
 
 def test_cli_verify_evidence_command_succeeds(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
