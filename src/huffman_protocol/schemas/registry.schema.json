@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://huffmanprotocol.org/schemas/registry-0.1.0.json",
+  "title": "Huffman Protocol Registry Index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["registry_version", "updated", "entries"],
+  "properties": {
+    "registry_version": { "const": "0.1.0" },
+    "updated": { "type": "string", "format": "date" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "manifest"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+([.-][a-z0-9]+)*$" },
+          "manifest": { "type": "string", "pattern": "^[a-zA-Z0-9._/-]+\\.json$" }
+        }
+      }
+    }
+  }
+}
