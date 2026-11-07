@@ -23,7 +23,11 @@
     "evidence-artifact-path-traversal-and-symlink-rejection",
     "local-python-cli",
     "source-and-wheel-distribution-build",
-    "offline-evidence-package-example"
+    "offline-evidence-package-example",
+    "duplicate-json-object-key-rejection",
+    "bounded-evidence-manifest-and-artifact-verification",
+    "evidence-manifest-symlink-rejection",
+    "evidence-package-collection-size-limits"
   ],
   "not_yet_implemented": [
     "conformance-test-execution",
