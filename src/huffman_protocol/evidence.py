@@ -31,8 +31,8 @@ def _validate_evidence(document: Any, source: Path) -> None:
             )
             details.append(f"{location}: {error.message}")
         raise DocumentValidationError(
-            f"{source}: evidence does not satisfy evidence.schema.json:\\n- "
-            + "\\n- ".join(details)
+            f"{source}: evidence does not satisfy evidence.schema.json:\n- "
+            + "\n- ".join(details)
         )
 
 
@@ -76,6 +76,12 @@ def verify_evidence(package_dir: Path) -> None:
     document = _load_json(manifest_path)
     _validate_evidence(document, manifest_path)
 
+    result_ids = [result["test_id"] for result in document["results"]]
+    if len(result_ids) != len(set(result_ids)):
+        raise DocumentValidationError(
+            f"{manifest_path}: duplicate test result identifiers"
+        )
+
     seen_paths: set[str] = set()
     for artifact in document["artifacts"]:
         relative_path = artifact["path"]
@@ -87,9 +93,17 @@ def verify_evidence(package_dir: Path) -> None:
 
         artifact_path = _safe_artifact_path(root, relative_path, manifest_path)
         digest = hashlib.sha256()
+        size_bytes = 0
         with artifact_path.open("rb") as handle:
             for chunk in iter(lambda: handle.read(1024 * 1024), b""):
                 digest.update(chunk)
+                size_bytes += len(chunk)
+
+        if "size_bytes" in artifact and artifact["size_bytes"] != size_bytes:
+            raise DocumentValidationError(
+                f"{manifest_path}: size mismatch for {relative_path}: "
+                f"expected {artifact['size_bytes']}, got {size_bytes}"
+            )
 
         actual = digest.hexdigest()
         if actual != artifact["sha256"]:
