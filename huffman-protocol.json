@@ -17,7 +17,10 @@
     "offline-registry-schema-validation",
     "registry-reference-existence-checks",
     "registry-manifest-identifier-consistency-checks",
-    "registry-path-traversal-rejection"
+    "registry-path-traversal-rejection",
+    "offline-evidence-package-schema-validation",
+    "offline-evidence-artifact-sha256-verification",
+    "evidence-artifact-path-traversal-and-symlink-rejection"
   ],
   "not_yet_implemented": [
     "conformance-test-execution",
