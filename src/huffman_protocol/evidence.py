@@ -56,7 +56,9 @@ def _safe_artifact_path(root: Path, value: str, source: Path) -> Path:
         ) from exc
 
     if not resolved.is_file():
-        raise DocumentValidationError(f"{source}: artifact does not exist or is not a file: {value}")
+        raise DocumentValidationError(
+            f"{source}: artifact does not exist or is not a file: {value}"
+        )
     return resolved
 
 
