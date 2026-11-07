@@ -1,0 +1,37 @@
+{
+  "discovery_format": "huffman-protocol-discovery/0.1",
+  "project": {
+    "id": "org.huffman.protocol",
+    "name": "Huffman Protocol",
+    "repository": "https://github.com/HuffmanMainNode/Huffman-Protocol",
+    "maturity": "experimental"
+  },
+  "registry": {
+    "index": "registry/index.json",
+    "schema": "src/huffman_protocol/schemas/registry.schema.json"
+  },
+  "manifest_schema": "src/huffman_protocol/schemas/manifest.schema.json",
+  "agent_instructions": "AGENTS.md",
+  "implemented_capabilities": [
+    "offline-manifest-schema-validation",
+    "offline-registry-schema-validation",
+    "registry-reference-existence-checks",
+    "registry-manifest-identifier-consistency-checks",
+    "registry-path-traversal-rejection"
+  ],
+  "not_yet_implemented": [
+    "conformance-test-execution",
+    "cross-implementation-differential-testing",
+    "cryptographic-evidence-signing",
+    "independent-evidence-verifier",
+    "federated-discovery",
+    "mcp-adapter",
+    "a2a-adapter"
+  ],
+  "execution_policy": {
+    "default_access": "read-only",
+    "network_required_for_validation": false,
+    "remote_code_execution_supported": false,
+    "agent_pull_requests_require_maintainer_review": true
+  }
+}
