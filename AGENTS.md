@@ -26,9 +26,10 @@ Install the package from the checkout with `python -m pip install .`. The curren
 - `huffman-protocol validate-manifest PATH`
 - `huffman-protocol validate-registry PATH`
 - `huffman-protocol verify-evidence DIRECTORY`
+- `huffman-protocol validate-a2a-card PATH` (requires optional `a2a` extra)
 - `huffman-protocol --help`
 
-The current operations are local and offline. Do not attempt to open sockets, proxy traffic, fetch remote manifests, execute third-party implementations, or claim MCP/A2A transport support. Those capabilities are not implemented in this release.
+The current operations are local and offline. A2A 1.0 AgentCard validation uses the optional official SDK and does not fetch the card, verify its signatures, or contact the agent. Do not attempt to open sockets, proxy traffic, fetch remote manifests, execute third-party implementations, or claim A2A task-exchange or MCP transport support. Those capabilities are not implemented in this release.
 
 For an evidence package, use `examples/evidence-package` as a format fixture only. Its `not-applicable` result is intentionally not a conformance claim. Evidence hashes detect artifact changes relative to a supplied digest; they do not authenticate the publisher or prove a test claim.
 
