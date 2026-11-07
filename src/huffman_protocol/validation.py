@@ -10,6 +10,9 @@ from typing import Any
 from jsonschema import Draft202012Validator, FormatChecker
 
 
+MAX_JSON_DOCUMENT_BYTES = 16 * 1024 * 1024
+
+
 class DocumentValidationError(ValueError):
     """Raised when a document is invalid against its published schema."""
 
@@ -25,14 +28,21 @@ def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 def _load_json(path: Path) -> Any:
     try:
-        with path.open("r", encoding="utf-8") as handle:
-            return json.load(handle, object_pairs_hook=_unique_object)
+        with path.open("rb") as handle:
+            raw = handle.read(MAX_JSON_DOCUMENT_BYTES + 1)
+        if len(raw) > MAX_JSON_DOCUMENT_BYTES:
+            raise DocumentValidationError(
+                f"{path}: JSON document exceeds {MAX_JSON_DOCUMENT_BYTES} byte limit"
+            )
+        return json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_object)
     except json.JSONDecodeError as exc:
         raise DocumentValidationError(
             f"{path}: invalid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}"
         ) from exc
     except UnicodeError as exc:
         raise DocumentValidationError(f"{path}: JSON is not valid UTF-8: {exc}") from exc
+    except RecursionError as exc:
+        raise DocumentValidationError(f"{path}: JSON nesting exceeds parser limits") from exc
     except OSError as exc:
         raise DocumentValidationError(f"{path}: {exc}") from exc
 
