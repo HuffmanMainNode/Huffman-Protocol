@@ -1,0 +1,44 @@
+{
+  "manifest_version": "0.1.0",
+  "id": "org.a2aproject.a2a-python",
+  "name": "Official A2A Python SDK",
+  "relationship": "implementation",
+  "status": "active",
+  "summary": "The official Python SDK for implementing A2A 1.0 clients and servers, including protocol types, supported transports, and optional AgentCard signing utilities.",
+  "protocol_version": "1.0",
+  "source": {
+    "repository": "https://github.com/a2aproject/a2a-python",
+    "commit": "28f8a62f25d46067ae846329a42a60c820fa927e",
+    "release": "1.3.0"
+  },
+  "license": "Apache-2.0",
+  "capabilities": [
+    "a2a-1.0-client",
+    "a2a-1.0-server",
+    "protobuf-protocol-types",
+    "json-rpc-transport",
+    "http-json-rest-transport",
+    "grpc-transport",
+    "agent-card-jws-signing-and-verification"
+  ],
+  "interfaces": [
+    {
+      "name": "Python SDK",
+      "version": "1.3.0",
+      "description": "Official Python implementation of the A2A 1.0 specification with 0.3 compatibility mode.",
+      "specification": "https://a2a-protocol.org/latest/sdk/python/"
+    }
+  ],
+  "limitations": [
+    "The SDK is an independent upstream project and must be installed and reviewed separately.",
+    "Optional server, gRPC, signing, database, and telemetry extras have distinct dependency and security implications.",
+    "Huffman Protocol does not automatically execute agents or trust SDK declarations."
+  ],
+  "verification": {
+    "status": "not-evaluated"
+  },
+  "contacts": {
+    "issues": "https://github.com/a2aproject/a2a-python/issues",
+    "documentation": "https://a2a-protocol.org/latest/sdk/python/"
+  }
+}
