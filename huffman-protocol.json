@@ -1,5 +1,5 @@
 {
-  "discovery_format": "huffman-protocol-discovery/0.1",
+  "discovery_format": "huffman-protocol-discovery/0.2",
   "project": {
     "id": "org.huffman.protocol",
     "name": "Huffman Protocol",
@@ -20,7 +20,10 @@
     "registry-path-traversal-rejection",
     "offline-evidence-package-schema-validation",
     "offline-evidence-artifact-sha256-verification",
-    "evidence-artifact-path-traversal-and-symlink-rejection"
+    "evidence-artifact-path-traversal-and-symlink-rejection",
+    "local-python-cli",
+    "source-and-wheel-distribution-build",
+    "offline-evidence-package-example"
   ],
   "not_yet_implemented": [
     "conformance-test-execution",
@@ -29,12 +32,36 @@
     "independent-evidence-verifier",
     "federated-discovery",
     "mcp-adapter",
-    "a2a-adapter"
+    "a2a-adapter",
+    "live-network-protocol-translation",
+    "runtime-transport-proxy",
+    "remote-agent-coordination",
+    "automatic-registry-crawling"
   ],
   "execution_policy": {
     "default_access": "read-only",
     "network_required_for_validation": false,
     "remote_code_execution_supported": false,
     "agent_pull_requests_require_maintainer_review": true
+  },
+  "package": {
+    "distribution": "huffman-protocol",
+    "python_requires": ">=3.11",
+    "install_from_checkout": "python -m pip install .",
+    "cli_entrypoint": "huffman-protocol",
+    "runtime_host_required": false,
+    "validation_network_required": false,
+    "commands": [
+      "huffman-protocol validate-manifest PATH",
+      "huffman-protocol validate-registry PATH",
+      "huffman-protocol verify-evidence DIRECTORY"
+    ],
+    "example_evidence_package": "examples/evidence-package"
+  },
+  "specifications": {
+    "manifest": "specifications/manifest/README.md",
+    "conformance": "specifications/conformance/README.md",
+    "evidence": "specifications/evidence/README.md",
+    "versioning": "specifications/VERSIONING.md"
   }
 }
