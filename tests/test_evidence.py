@@ -106,3 +106,22 @@ def test_invalid_subject_revision_is_rejected(tmp_path: Path) -> None:
 def test_missing_package_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(DocumentValidationError, match="directory does not exist"):
         verify_evidence(tmp_path / "missing")
+
+
+
+def test_declared_artifact_size_mismatch_is_rejected(tmp_path: Path) -> None:
+    pkg = make_package(tmp_path / "package")
+    document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
+    document["artifacts"][0]["size_bytes"] += 1
+    (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="size mismatch"):
+        verify_evidence(pkg)
+
+
+def test_duplicate_test_result_ids_are_rejected(tmp_path: Path) -> None:
+    pkg = make_package(tmp_path / "package")
+    document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
+    document["results"].append(document["results"][0])
+    (pkg / "evidence.json").write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="duplicate test result identifiers"):
+        verify_evidence(pkg)
