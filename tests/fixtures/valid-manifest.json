@@ -6,7 +6,7 @@
   "status": "experimental",
   "summary": "A test fixture used to verify the Huffman Protocol manifest schema and local validator behavior.",
   "source": {
-    "repository": "https://github.com/example/example-protocol",
+    "repository": "https://codeberg.org/example/example-protocol",
     "commit": "0123456789abcdef0123456789abcdef01234567"
   },
   "capabilities": ["example-message-exchange"],
