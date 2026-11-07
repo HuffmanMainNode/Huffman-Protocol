@@ -34,3 +34,13 @@ A digest detects changes relative to a trusted digest. A signature can attribute
 Independent verification means a separate verifier can validate the package and reproduce the stated checks. The current verifier checks package structure and artifact integrity only; it does not rerun tests or verify signatures.
 
 Evidence must not contain secrets, private user data, or unnecessary operational details.
+
+## Example
+
+Run the included illustrative fixture:
+
+```sh
+huffman-protocol verify-evidence examples/evidence-package
+```
+
+The fixture is intentionally marked `not-applicable`; it demonstrates package structure and artifact integrity only. It is not a claim that a conformance test was executed.

@@ -76,16 +76,15 @@ def verify_evidence(package_dir: Path) -> None:
     if len(result_ids) != len(set(result_ids)):
         raise DocumentValidationError(f"{manifest_path}: duplicate test result identifiers")
 
-    seen_paths: set[str] = set()
+    seen_targets: set[Path] = set()
     for artifact in document["artifacts"]:
         relative_path = artifact["path"]
-        if relative_path in seen_paths:
-            raise DocumentValidationError(
-                f"{manifest_path}: duplicate artifact path: {relative_path}"
-            )
-        seen_paths.add(relative_path)
-
         artifact_path = _safe_artifact_path(root, relative_path, manifest_path)
+        if artifact_path in seen_targets:
+            raise DocumentValidationError(
+                f"{manifest_path}: duplicate artifact target: {relative_path}"
+            )
+        seen_targets.add(artifact_path)
         digest = hashlib.sha256()
         size_bytes = 0
         with artifact_path.open("rb") as handle:

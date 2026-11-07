@@ -1,0 +1,35 @@
+{
+  "evidence_version": "0.1.0",
+  "id": "org.huffman.protocol.example-evidence",
+  "created_at": "2026-11-07T00:00:00Z",
+  "subject": {
+    "id": "org.huffman.protocol",
+    "repository": "https://github.com/HuffmanMainNode/Huffman-Protocol",
+    "commit": "3e05073e0b26e051f09f369bad9ad5055f4db751"
+  },
+  "test_suite": {
+    "id": "org.huffman.protocol.evidence-package-format",
+    "version": "0.1.0",
+    "revision": "3e05073e0b26e051f09f369bad9ad5055f4db751"
+  },
+  "results": [
+    {
+      "test_id": "illustrative-fixture-not-a-test",
+      "outcome": "not-applicable",
+      "detail": "Illustrative evidence package fixture only; no conformance test result is claimed."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/sample-output.txt",
+      "sha256": "a6fa4f33fb2f3094c6e705ead8fd7f0dec3616fd625b5874fa19a8997d4bbf15",
+      "media_type": "text/plain",
+      "size_bytes": 42
+    }
+  ],
+  "limitations": [
+    "This is an illustrative format fixture, not a conformance or security certification.",
+    "The result is not-applicable because no test execution is claimed.",
+    "The digest is useful for detecting changes only when the expected digest is obtained through a trusted channel."
+  ]
+}
