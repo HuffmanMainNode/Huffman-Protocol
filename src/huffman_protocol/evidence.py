@@ -35,8 +35,7 @@ def _validate_evidence(document: Any, source: Path) -> None:
             )
             details.append(f"{location}: {error.message}")
         raise DocumentValidationError(
-            f"{source}: evidence does not satisfy evidence.schema.json:\n- "
-            + "\n- ".join(details)
+            f"{source}: evidence does not satisfy evidence.schema.json:\n- " + "\n- ".join(details)
         )
 
 
