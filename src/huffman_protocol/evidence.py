@@ -38,7 +38,7 @@ def _validate_evidence(document: Any, source: Path) -> None:
 
 def _safe_artifact_path(root: Path, value: str, source: Path) -> Path:
     relative = Path(value)
-    if relative.is_absolute() or ".." in relative.parts or "\\\\" in value:
+    if relative.is_absolute() or ".." in relative.parts or "\\" in value:
         raise DocumentValidationError(f"{source}: unsafe artifact path: {value}")
 
     candidate = root
