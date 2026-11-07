@@ -3,7 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from hpack.validation import DocumentValidationError, validate_manifest, validate_registry
+from huffman_protocol.validation import (
+    DocumentValidationError,
+    validate_manifest,
+    validate_registry,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -40,9 +44,12 @@ def test_invalid_registry_date_is_rejected(tmp_path: Path) -> None:
 
 def test_duplicate_registry_ids_are_rejected(tmp_path: Path) -> None:
     path = tmp_path / "registry.json"
-    entry = {"id": "same.protocol", "manifest": "entries/one.json"}
+    entries = [
+        {"id": "same.protocol", "manifest": "entries/one.json"},
+        {"id": "same.protocol", "manifest": "entries/two.json"},
+    ]
     path.write_text(
-        json.dumps({"registry_version": "0.1.0", "updated": "2026-11-06", "entries": [entry, entry]}),
+        json.dumps({"registry_version": "0.1.0", "updated": "2026-11-06", "entries": entries}),
         encoding="utf-8",
     )
     with pytest.raises(DocumentValidationError, match="duplicate entry identifiers"):
