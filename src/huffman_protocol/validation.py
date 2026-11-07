@@ -9,7 +9,6 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
-
 MAX_JSON_DOCUMENT_BYTES = 16 * 1024 * 1024
 MAX_JSON_NESTING_DEPTH = 64
 
