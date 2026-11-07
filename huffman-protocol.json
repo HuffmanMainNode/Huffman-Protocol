@@ -81,7 +81,8 @@
       "evidence_manifest_bytes": 4194304,
       "evidence_artifact_count": 256,
       "evidence_artifact_bytes": 134217728,
-      "evidence_total_artifact_bytes": 536870912
+      "evidence_total_artifact_bytes": 536870912,
+      "json_nesting_depth": 64
     }
   }
 }
