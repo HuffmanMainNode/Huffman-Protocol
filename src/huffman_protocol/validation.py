@@ -62,7 +62,25 @@ def validate_registry(path: Path) -> None:
         raise DocumentValidationError(f"{path}: registry contains duplicate entry identifiers")
     if len(manifests) != len(set(manifests)):
         raise DocumentValidationError(f"{path}: registry contains duplicate manifest paths")
-    for manifest in manifests:
-        parts = Path(manifest).parts
-        if Path(manifest).is_absolute() or ".." in parts or "\\" in manifest:
+    registry_root = path.parent.resolve()
+    for entry in entries:
+        manifest = entry["manifest"]
+        relative_path = Path(manifest)
+        parts = relative_path.parts
+        if relative_path.is_absolute() or ".." in parts or "\\" in manifest:
             raise DocumentValidationError(f"{path}: unsafe manifest path: {manifest}")
+        target = (registry_root / relative_path).resolve()
+        try:
+            target.relative_to(registry_root)
+        except ValueError as exc:
+            raise DocumentValidationError(
+                f"{path}: manifest resolves outside registry directory: {manifest}"
+            ) from exc
+        if not target.is_file():
+            raise DocumentValidationError(f"{path}: referenced manifest does not exist: {manifest}")
+        manifest_document = _load_json(target)
+        _validate(manifest_document, "manifest.schema.json", target)
+        if manifest_document["id"] != entry["id"]:
+            raise DocumentValidationError(
+                f"{path}: registry id does not match manifest id for {manifest}"
+            )
