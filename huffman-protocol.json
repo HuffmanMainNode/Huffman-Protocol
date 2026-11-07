@@ -27,7 +27,8 @@
     "duplicate-json-object-key-rejection",
     "bounded-evidence-manifest-and-artifact-verification",
     "evidence-manifest-symlink-rejection",
-    "evidence-package-collection-size-limits"
+    "evidence-package-collection-size-limits",
+    "offline-a2a-v1-agent-card-structural-validation"
   ],
   "not_yet_implemented": [
     "conformance-test-execution",
@@ -36,11 +37,13 @@
     "independent-evidence-verifier",
     "federated-discovery",
     "mcp-adapter",
-    "a2a-adapter",
     "live-network-protocol-translation",
     "runtime-transport-proxy",
     "remote-agent-coordination",
-    "automatic-registry-crawling"
+    "automatic-registry-crawling",
+    "a2a-http-jsonrpc-task-exchange",
+    "a2a-agent-card-jws-verification",
+    "mcp-adapter"
   ],
   "execution_policy": {
     "default_access": "read-only",
@@ -58,9 +61,13 @@
     "commands": [
       "huffman-protocol validate-manifest PATH",
       "huffman-protocol validate-registry PATH",
-      "huffman-protocol verify-evidence DIRECTORY"
+      "huffman-protocol verify-evidence DIRECTORY",
+      "huffman-protocol validate-a2a-card PATH (requires optional a2a extra)"
     ],
-    "example_evidence_package": "examples/evidence-package"
+    "example_evidence_package": "examples/evidence-package",
+    "optional_extras": {
+      "a2a": "a2a-sdk>=1.3.0,<2"
+    }
   },
   "specifications": {
     "manifest": "specifications/manifest/README.md",
@@ -83,6 +90,20 @@
       "evidence_artifact_bytes": 134217728,
       "evidence_total_artifact_bytes": 536870912,
       "json_nesting_depth": 64
+    }
+  },
+  "integrations": {
+    "a2a": {
+      "protocol_version": "1.0",
+      "sdk": "a2a-sdk",
+      "sdk_version_constraint": ">=1.3.0,<2",
+      "sdk_repository": "https://github.com/a2aproject/a2a-python",
+      "sdk_commit": "28f8a62f25d46067ae846329a42a60c820fa927e",
+      "spec_repository": "https://github.com/a2aproject/A2A",
+      "spec_commit": "9fff3e08ab33bb7674e7d98fc7c08ae8592bb4bd",
+      "supported": "offline-agent-card-structural-validation",
+      "transport_enabled": false,
+      "signature_verification_enabled": false
     }
   }
 }
