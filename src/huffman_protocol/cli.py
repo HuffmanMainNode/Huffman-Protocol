@@ -28,9 +28,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     manifest.add_argument("path", type=Path)
 
-    registry = commands.add_parser(
-        "validate-registry", help="validate a registry index JSON file"
-    )
+    registry = commands.add_parser("validate-registry", help="validate a registry index JSON file")
     registry.add_argument("path", type=Path)
 
     evidence = commands.add_parser(
