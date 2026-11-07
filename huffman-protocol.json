@@ -75,6 +75,13 @@
     "validation_requires_network": false,
     "opens_network_sockets": false,
     "executes_third_party_code": false,
-    "agent_state_storage": "caller-managed-local-state"
+    "agent_state_storage": "caller-managed-local-state",
+    "input_limits": {
+      "metadata_json_bytes": 16777216,
+      "evidence_manifest_bytes": 4194304,
+      "evidence_artifact_count": 256,
+      "evidence_artifact_bytes": 134217728,
+      "evidence_total_artifact_bytes": 536870912
+    }
   }
 }
