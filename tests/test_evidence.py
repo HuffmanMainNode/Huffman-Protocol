@@ -137,7 +137,6 @@ def test_cli_verify_evidence_command_succeeds(
     assert "VALID:" in capsys.readouterr().out
 
 
-
 def test_equivalent_artifact_paths_are_rejected(tmp_path: Path) -> None:
     pkg = make_package(tmp_path / "package")
     document = json.loads((pkg / "evidence.json").read_text(encoding="utf-8"))
