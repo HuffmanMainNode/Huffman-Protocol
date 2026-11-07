@@ -35,10 +35,12 @@ This repository is an early-stage project. It does not yet provide a security ce
 
 - [Project architecture](docs/ARCHITECTURE.md)
 - [Machine-readable manifest](specifications/manifest/README.md)
-- [Registry](registry/index.json)
+- [Registry index](registry/index.json)
+- [Registry guidance](registry/README.md)
 - [Conformance model](specifications/conformance/README.md)
 - [Evidence model](specifications/evidence/README.md)
 - [Schema versioning policy](specifications/VERSIONING.md)
+- [A2A 1.0 integration profile](specifications/a2a/README.md)
 - [Agent instructions](AGENTS.md)
 - [Governance](GOVERNANCE.md)
 - [Security policy](SECURITY.md)
@@ -79,7 +81,18 @@ ruff format --check .
 ruff check .
 ```
 
-The validator is offline. It validates schemas, manifest references, identifier consistency, and safe relative paths. Evidence verification validates the evidence schema and local artifact digests. Neither operation fetches or executes upstream code.
+The core validator and evidence verifier are offline. Optional A2A card validation uses the official A2A SDK to validate a local A2A 1.0 AgentCard; it does not contact the agent or verify signatures.
+
+## Optional A2A 1.0 card validation
+
+Install the optional official SDK integration:
+
+```sh
+python -m pip install ".[a2a]"
+huffman-protocol validate-a2a-card path/to/agent-card.json
+```
+
+This validates a local AgentCard against the official A2A 1.0 protobuf model and required-field rules. It does not fetch remote cards, verify JWS signatures, or perform A2A task exchange. See the [A2A integration profile](specifications/a2a/README.md).
 
 ## Example evidence package
 

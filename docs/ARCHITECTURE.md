@@ -29,7 +29,7 @@ The current implementation covers offline manifest and registry validation plus 
 
 ## Compatibility strategy
 
-Adapters should test and connect existing protocols rather than replace them. Candidate integrations include MCP and A2A, subject to version-specific review. Software provenance formats such as SLSA, in-toto, and DSSE should be reused where their semantics fit.
+Adapters should test and connect existing protocols rather than replace them. The first selected profile is A2A 1.0: the optional adapter validates local AgentCard documents using the official SDK's protobuf model and required-field rules. This is structural validation only. It does not fetch cards, verify JWS signatures, or perform HTTP, JSON-RPC, gRPC, or task exchange. MCP remains a complementary future integration. Software provenance formats such as SLSA, in-toto, and DSSE should be reused where their semantics fit.
 
 ## Initial implementation
 

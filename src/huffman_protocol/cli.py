@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from huffman_protocol import __version__
+from huffman_protocol.a2a import validate_a2a_card
 from huffman_protocol.evidence import verify_evidence
 from huffman_protocol.validation import (
     DocumentValidationError,
@@ -37,6 +38,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="directory containing evidence.json and its artifacts",
     )
+
+    a2a_card = commands.add_parser(
+        "validate-a2a-card", help="validate a local A2A 1.0 AgentCard offline"
+    )
+    a2a_card.add_argument("path", type=Path, help="local AgentCard JSON file")
     return parser
 
 
@@ -47,8 +53,10 @@ def main() -> int:
             validate_manifest(args.path)
         elif args.command == "validate-registry":
             validate_registry(args.path)
-        else:
+        elif args.command == "verify-evidence":
             verify_evidence(args.path)
+        else:
+            validate_a2a_card(args.path)
     except DocumentValidationError as exc:
         print(f"INVALID: {exc}", file=sys.stderr)
         return 1

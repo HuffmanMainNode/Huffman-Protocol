@@ -52,3 +52,26 @@ jobs:
           /tmp/huffman-wheel-test/bin/python -m pip install dist/*.whl
           /tmp/huffman-wheel-test/bin/huffman-protocol --help
           /tmp/huffman-wheel-test/bin/python -c "from importlib.resources import files; p = files('huffman_protocol').joinpath('schemas', 'evidence.schema.json'); assert p.is_file(); print('Evidence schema packaged:', p)"
+
+  a2a-agent-card:
+    name: A2A 1.0 AgentCard adapter
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install optional A2A integration and development tools
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev,a2a]"
+      - name: Test A2A AgentCard adapter
+        run: python -m pytest tests/test_a2a.py
+      - name: Check formatting and lint
+        run: |
+          ruff format --check .
+          ruff check .

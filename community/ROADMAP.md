@@ -30,7 +30,8 @@ This roadmap records intended work, not completed capabilities. Checkboxes are i
 - [ ] Document signer identity, revocation, and trust-root lifecycle.
 
 ## Stage 3: Interoperability
-- [ ] Select one narrow MCP or A2A integration profile.
+- [x] Select the A2A 1.0 AgentCard profile and pin upstream specification and SDK revisions.
+- [x] Implement offline AgentCard structural validation using the official optional SDK.
 - [ ] Identify two independently maintained implementations.
 - [ ] Develop shared test vectors.
 - [ ] Run cross-implementation differential tests.
