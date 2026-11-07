@@ -14,14 +14,25 @@ class DocumentValidationError(ValueError):
     """Raised when a document is invalid against its published schema."""
 
 
+def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise DocumentValidationError(f"duplicate JSON object key: {key!r}")
+        result[key] = value
+    return result
+
+
 def _load_json(path: Path) -> Any:
     try:
         with path.open("r", encoding="utf-8") as handle:
-            return json.load(handle)
+            return json.load(handle, object_pairs_hook=_unique_object)
     except json.JSONDecodeError as exc:
         raise DocumentValidationError(
             f"{path}: invalid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}"
         ) from exc
+    except UnicodeError as exc:
+        raise DocumentValidationError(f"{path}: JSON is not valid UTF-8: {exc}") from exc
     except OSError as exc:
         raise DocumentValidationError(f"{path}: {exc}") from exc
 
