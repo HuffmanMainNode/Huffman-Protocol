@@ -186,3 +186,25 @@ def test_conformance_vector_cli_validates_without_execution(
     monkeypatch.setattr("sys.argv", ["huffman-protocol", "validate-conformance-vector", str(path)])
     assert main() == 0
     assert "VALID:" in capsys.readouterr().out
+
+
+def test_conformance_vector_rejects_duplicate_json_keys(tmp_path: Path) -> None:
+    path = tmp_path / "duplicate-vector.json"
+    path.write_text('{"vector_version":"0.1.0","vector_version":"0.1.0"}', encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="duplicate JSON object key"):
+        validate_conformance_vector(path)
+
+
+def test_conformance_vector_rejects_oversized_json(tmp_path: Path) -> None:
+    path = tmp_path / "oversized-vector.json"
+    with path.open("wb") as handle:
+        handle.truncate(MAX_JSON_DOCUMENT_BYTES + 1)
+    with pytest.raises(DocumentValidationError, match="JSON document exceeds"):
+        validate_conformance_vector(path)
+
+
+def test_conformance_vector_rejects_excessive_nesting(tmp_path: Path) -> None:
+    path = tmp_path / "deep-vector.json"
+    path.write_text('{"input":' + "[" * 100 + "0" + "]" * 100 + "}", encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="nesting exceeds"):
+        validate_conformance_vector(path)
