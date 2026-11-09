@@ -11,6 +11,7 @@ from huffman_protocol.a2a import validate_a2a_card
 from huffman_protocol.evidence import verify_evidence
 from huffman_protocol.validation import (
     DocumentValidationError,
+    validate_conformance_vector,
     validate_manifest,
     validate_registry,
 )
@@ -29,6 +30,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     registry = commands.add_parser("validate-registry", help="validate a registry index JSON file")
     registry.add_argument("path", type=Path)
+
+    vector = commands.add_parser(
+        "validate-conformance-vector", help="validate one declarative conformance vector offline"
+    )
+    vector.add_argument("path", type=Path)
 
     evidence = commands.add_parser(
         "verify-evidence", help="verify an offline H-PACK evidence package"
@@ -49,7 +55,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     try:
-        if args.command == "validate-manifest":
+        if args.command == "validate-conformance-vector":
+            validate_conformance_vector(args.path)
+        elif args.command == "validate-manifest":
             validate_manifest(args.path)
         elif args.command == "validate-registry":
             validate_registry(args.path)
