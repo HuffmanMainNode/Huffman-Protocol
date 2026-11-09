@@ -88,6 +88,11 @@ def validate_manifest(path: Path) -> None:
     _validate(_load_json(path), "manifest.schema.json", path)
 
 
+def validate_conformance_vector(path: Path) -> None:
+    """Validate one declarative conformance vector without executing it."""
+    _validate(_load_json(path), "conformance-vector.schema.json", path)
+
+
 def validate_registry(path: Path) -> None:
     """Validate the registry index without fetching referenced repositories."""
     document = _load_json(path)

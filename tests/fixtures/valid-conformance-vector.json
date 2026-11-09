@@ -1,0 +1,41 @@
+{
+  "vector_version": "0.1.0",
+  "id": "oix.envelope.reject-expired-message",
+  "target": {
+    "interface": "oix.message-envelope",
+    "version": "1.0"
+  },
+  "input": {
+    "issued_at": "2026-01-01T00:00:00Z",
+    "expires_at": "2026-01-01T00:01:00Z",
+    "now": "2026-01-01T00:02:00Z"
+  },
+  "assertions": [
+    {
+      "path": "result.accepted",
+      "operator": "equals",
+      "expected": false
+    },
+    {
+      "path": "result.reason",
+      "operator": "equals",
+      "expected": "expired"
+    }
+  ],
+  "preconditions": [
+    "A trusted sender key is provisioned in the isolated test fixture."
+  ],
+  "permitted_side_effects": [
+    "none"
+  ],
+  "timeout_seconds": 5,
+  "resource_limits": {
+    "memory_mb": 128,
+    "cpu_seconds": 5,
+    "max_output_bytes": 65536
+  },
+  "determinism": "deterministic",
+  "expected_outcome": "pass",
+  "safety_classification": "safe-local",
+  "notes": "Declarative example only. No test code is embedded or executed by the validator."
+}

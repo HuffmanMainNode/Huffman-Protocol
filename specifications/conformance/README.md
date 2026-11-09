@@ -1,10 +1,19 @@
 # Conformance model
 
-Version 0.1.0 is design-stage.
+**Vector metadata status:** implemented in protocol version 0.1.0.
+**Execution engine status:** not implemented.
 
-Conformance testing evaluates an implementation against a versioned specification and test profile.
+Conformance testing evaluates an implementation against a versioned specification and test profile. A declarative vector is a test description, not proof that a test was executed.
 
-Each test vector should define a stable identifier, vector-set version, target interface and version, input and expected observable behavior, preconditions, permitted side effects, timeout and resource bounds, determinism, expected failure behavior, and safety classification.
+## Vector contract
+
+The machine-readable contract is `src/huffman_protocol/schemas/conformance-vector.schema.json`. Validate a local vector with:
+
+```bash
+huffman-protocol validate-conformance-vector tests/fixtures/valid-conformance-vector.json
+```
+
+Each vector defines a stable identifier, vector-set version, target interface and version, input data, observable assertions, preconditions, permitted side effects, timeout, resource bounds, determinism, expected outcome, and safety classification.
 
 Result states:
 - pass: observed output satisfies the defined assertion.
@@ -13,6 +22,10 @@ Result states:
 - skipped: not run, with a reason.
 - not-applicable: outside the declared profile.
 
-A result must not be inferred from a manifest. Compatibility requires actual tests against identified implementation revisions.
+## Trust and execution boundary
 
-The initial toolkit validates metadata and local test data only. It does not download or execute third-party projects. Future execution must use isolation, least privilege, resource limits, no ambient credentials, and explicit network policy.
+The validator checks JSON metadata against the published schema. It does not run test code, download dependencies, clone repositories, connect to remote systems, or establish that a declared expected outcome is true.
+
+A result must not be inferred from a manifest. Compatibility requires actual tests against identified implementation revisions and retained evidence.
+
+Any future execution engine must be a separate component with isolation, least privilege, resource limits, no ambient credentials, explicit network policy, bounded output, and independently verifiable execution records. Arbitrary third-party repository code must never execute as a side effect of validation.
