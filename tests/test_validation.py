@@ -6,6 +6,7 @@ import pytest
 from huffman_protocol.validation import (
     MAX_JSON_DOCUMENT_BYTES,
     DocumentValidationError,
+    validate_conformance_vector,
     validate_manifest,
     validate_registry,
 )
@@ -152,3 +153,36 @@ def test_excessively_nested_json_is_rejected(tmp_path: Path) -> None:
     path.write_text("[" * 3000 + "0" + "]" * 3000, encoding="utf-8")
     with pytest.raises(DocumentValidationError, match="nesting exceeds"):
         validate_manifest(path)
+
+
+def test_conformance_vector_fixture_is_valid() -> None:
+    validate_conformance_vector(ROOT / "tests" / "fixtures" / "valid-conformance-vector.json")
+
+
+def test_conformance_vector_rejects_unbounded_timeout(tmp_path: Path) -> None:
+    vector = json.loads((ROOT / "tests" / "fixtures" / "valid-conformance-vector.json").read_text())
+    vector["timeout_seconds"] = 301
+    path = tmp_path / "unbounded-vector.json"
+    path.write_text(json.dumps(vector), encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="does not satisfy"):
+        validate_conformance_vector(path)
+
+
+def test_conformance_vector_rejects_missing_resource_limits(tmp_path: Path) -> None:
+    vector = json.loads((ROOT / "tests" / "fixtures" / "valid-conformance-vector.json").read_text())
+    del vector["resource_limits"]
+    path = tmp_path / "missing-limits.json"
+    path.write_text(json.dumps(vector), encoding="utf-8")
+    with pytest.raises(DocumentValidationError, match="does not satisfy"):
+        validate_conformance_vector(path)
+
+
+def test_conformance_vector_cli_validates_without_execution(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from huffman_protocol.cli import main
+
+    path = ROOT / "tests" / "fixtures" / "valid-conformance-vector.json"
+    monkeypatch.setattr("sys.argv", ["huffman-protocol", "validate-conformance-vector", str(path)])
+    assert main() == 0
+    assert "VALID:" in capsys.readouterr().out
