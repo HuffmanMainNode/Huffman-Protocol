@@ -69,6 +69,7 @@ python -m pip install --upgrade pip
 python -m pip install .
 huffman-protocol --help
 huffman-protocol validate-registry registry/index.json
+huffman-protocol validate-conformance-vector tests/fixtures/valid-conformance-vector.json
 huffman-protocol verify-evidence examples/evidence-package
 ```
 
