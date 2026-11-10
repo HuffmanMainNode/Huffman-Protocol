@@ -29,7 +29,8 @@
     "bounded-evidence-manifest-and-artifact-verification",
     "evidence-manifest-symlink-rejection",
     "evidence-package-collection-size-limits",
-    "offline-a2a-v1-agent-card-structural-validation"
+    "offline-a2a-v1-agent-card-structural-validation",
+    "offline-conformance-vector-schema-validation"
   ],
   "not_yet_implemented": [
     "conformance-test-execution",
@@ -61,6 +62,7 @@
     "commands": [
       "huffman-protocol validate-manifest PATH",
       "huffman-protocol validate-registry PATH",
+      "huffman-protocol validate-conformance-vector PATH",
       "huffman-protocol verify-evidence DIRECTORY",
       "huffman-protocol validate-a2a-card PATH (requires optional a2a extra)"
     ],
