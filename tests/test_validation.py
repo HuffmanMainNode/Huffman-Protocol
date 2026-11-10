@@ -208,3 +208,10 @@ def test_conformance_vector_rejects_excessive_nesting(tmp_path: Path) -> None:
     path.write_text('{"input":' + "[" * 100 + "0" + "]" * 100 + "}", encoding="utf-8")
     with pytest.raises(DocumentValidationError, match="nesting exceeds"):
         validate_conformance_vector(path)
+
+
+
+def test_discovery_descriptor_lists_conformance_vector_validation() -> None:
+    descriptor = json.loads((ROOT / "huffman-protocol.json").read_text(encoding="utf-8"))
+    assert "offline-conformance-vector-schema-validation" in descriptor["implemented_capabilities"]
+    assert "huffman-protocol validate-conformance-vector PATH" in descriptor["package"]["commands"]
