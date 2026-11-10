@@ -209,8 +209,6 @@ def test_conformance_vector_rejects_excessive_nesting(tmp_path: Path) -> None:
     with pytest.raises(DocumentValidationError, match="nesting exceeds"):
         validate_conformance_vector(path)
 
-
-
 def test_discovery_descriptor_lists_conformance_vector_validation() -> None:
     descriptor = json.loads((ROOT / "huffman-protocol.json").read_text(encoding="utf-8"))
     assert "offline-conformance-vector-schema-validation" in descriptor["implemented_capabilities"]
