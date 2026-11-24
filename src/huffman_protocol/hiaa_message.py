@@ -11,7 +11,7 @@ from typing import Any
 
 from huffman_protocol.hiaa_identity import AgentIdentity, verify_signature
 
-_DOMAIN = b"HUFFMAN-HIAA-MESSAGE-V0.1\\x00"
+_DOMAIN = b"HUFFMAN-HIAA-MESSAGE-V0.1\x00"
 
 
 def canonical_payload(payload: dict[str, Any]) -> bytes:
@@ -84,7 +84,10 @@ def verify_envelope(
                 return False
         if not isinstance(payload.get("body"), dict) or max_age < 0:
             return False
-        if expected_recipient is not None and payload["recipient"] != expected_recipient:
+        if (
+            expected_recipient is not None
+            and payload["recipient"] != expected_recipient
+        ):
             return False
         issued_at = payload["issued_at"]
         if not isinstance(issued_at, int) or isinstance(issued_at, bool):
