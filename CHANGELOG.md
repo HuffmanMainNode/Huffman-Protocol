@@ -2,6 +2,12 @@
 
 All notable project changes are recorded here. This file tracks repository changes; it does not imply that a package or GitHub release has been published.
 
+## Unreleased
+
+### Release candidate preparation
+- Updated CI to retain the Python source distribution, wheel, and SHA-256 checksums as a downloadable workflow artifact.
+- Publication remains gated on a successful workflow run for the exact release commit.
+
 ## Unreleased (package version 0.1.0)
 
 ### Added
