@@ -107,23 +107,33 @@ class ReplayCache:
         if capacity < 1:
             raise ValueError("capacity must be positive")
         self.capacity = capacity
-        self._seen: dict[str, int] = {}
+        self._seen: dict[tuple[str, str], int] = {}
         self._lock = threading.Lock()
 
     def accept(self, envelope: dict[str, Any], *, now: int | None = None) -> bool:
         if not verify_envelope(envelope, now=now):
             return False
         current = int(time.time()) if now is None else now
-        message_id = envelope["payload"].get("message_id")
+        payload = envelope["payload"]
+        message_id = payload.get("message_id")
+        sender = payload.get("sender")
         if not isinstance(message_id, str) or not message_id:
             return False
+        if not isinstance(sender, str) or not sender:
+            return False
+        replay_key = (sender, message_id)
         with self._lock:
-            self._seen = {key: expiry for key, expiry in self._seen.items() if expiry >= current}
-            if message_id in self._seen:
+            self._seen = {
+                key: expiry
+                for key, expiry in self._seen.items()
+                if expiry >= current
+            }
+            if replay_key in self._seen:
                 return False
             if len(self._seen) >= self.capacity:
-                del self._seen[min(self._seen, key=self._seen.get)]
-            self._seen[message_id] = current + 300
+                oldest = min(self._seen, key=self._seen.get)
+                del self._seen[oldest]
+            self._seen[replay_key] = current + 300
             return True
 
 
