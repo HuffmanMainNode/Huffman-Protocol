@@ -84,10 +84,7 @@ def verify_envelope(
                 return False
         if not isinstance(payload.get("body"), dict) or max_age < 0:
             return False
-        if (
-            expected_recipient is not None
-            and payload["recipient"] != expected_recipient
-        ):
+        if expected_recipient is not None and payload["recipient"] != expected_recipient:
             return False
         issued_at = payload["issued_at"]
         if not isinstance(issued_at, int) or isinstance(issued_at, bool):
@@ -95,9 +92,7 @@ def verify_envelope(
         current = int(time.time()) if now is None else now
         if issued_at > current + 30 or current - issued_at > max_age:
             return False
-        return verify_signature(
-            public_key, _DOMAIN + canonical_payload(payload), signature
-        )
+        return verify_signature(public_key, _DOMAIN + canonical_payload(payload), signature)
     except (KeyError, TypeError, ValueError):
         return False
 
@@ -120,11 +115,7 @@ class ReplayCache:
         if not isinstance(message_id, str) or not message_id:
             return False
         with self._lock:
-            self._seen = {
-                key: expiry
-                for key, expiry in self._seen.items()
-                if expiry >= current
-            }
+            self._seen = {key: expiry for key, expiry in self._seen.items() if expiry >= current}
             if message_id in self._seen:
                 return False
             if len(self._seen) >= self.capacity:
