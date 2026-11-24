@@ -1,7 +1,7 @@
 # Huffman Independent Agent Architecture (HIAA)
 
 **Status:** experimental specification, version 0.1.0.  
-**Implementation status:** initial local Ed25519 identity and signed-envelope primitives. No transport or production runtime is claimed.
+**Implementation status:** Ed25519 identity, signed-envelope primitives, and an experimental TCP request/acknowledgement transport. No production runtime is claimed.
 
 ## Problem addressed
 
@@ -20,7 +20,7 @@ A signature demonstrates possession of a private key for a particular message. I
 - **MCP** remains a tool and context integration protocol. HIAA does not replace MCP servers or tool schemas.
 - **Ed25519** supplies signatures through the established Python cryptography package. No custom cryptography is introduced.
 - **H-PACK** can package test outputs and conformance evidence. HIAA does not turn a digest into independent certification.
-- **Transport** is deliberately unspecified in this initial profile. A later transport profile can use an existing reviewed standard.
+- **Transport** currently has an experimental newline-delimited JSON TCP reference implementation. It is not a replacement for a reviewed production transport or encrypted channel.
 
 ## Signed message profile
 
@@ -65,7 +65,7 @@ ReplayCache is an in-memory, process-local guard. Production deployments need du
 
 A conforming implementation must demonstrate independent key generation, stable key-derived identifiers, cross-receiver signature verification, tamper rejection, sender mismatch rejection, timestamp enforcement, duplicate-message rejection, and receiver-controlled capability denial.
 
-This initial Python implementation is a reference primitive, not a complete multi-device agent runtime. A later transport profile must demonstrate two independently installed processes exchanging messages over a real transport, including reconnect and failure behavior, before claiming peer-to-peer operation.
+The Python implementation now includes a TCP request/acknowledgement reference transport and loopback integration tests. Separate-process, separate-machine interoperability, reconnect behavior, and production network hardening remain required before claiming a production peer-to-peer runtime.
 
 
 ## Experimental TCP transport
