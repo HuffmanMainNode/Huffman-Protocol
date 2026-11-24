@@ -34,7 +34,9 @@
     "hiaa-ed25519-agent-identity-primitives",
     "hiaa-signed-message-envelope-verification",
     "hiaa-timestamp-and-process-local-replay-checks",
-    "hiaa-receiver-local-capability-authorization"
+    "hiaa-receiver-local-capability-authorization",
+    "hiaa-experimental-newline-json-tcp-transport",
+    "hiaa-loopback-peer-integration-tests"
   ],
   "not_yet_implemented": [
     "conformance-test-execution",
@@ -49,7 +51,7 @@
     "automatic-registry-crawling",
     "a2a-http-jsonrpc-task-exchange",
     "a2a-agent-card-jws-verification",
-    "hiaa-network-transport-and-peer-handshake",
+    "hiaa-production-network-hardening-and-cross-machine-validation",
     "hiaa-key-enrollment-rotation-and-revocation",
     "hiaa-durable-replay-journal",
     "hiaa-cross-implementation-interoperability-tests"
