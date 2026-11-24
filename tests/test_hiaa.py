@@ -27,9 +27,7 @@ def test_independent_identities_sign_and_verify():
 
 def test_tampering_and_sender_relabeling_are_rejected():
     sender = AgentIdentity.generate()
-    message = create_envelope(
-        sender, "receiver", "status.read", {"ok": True}, issued_at=NOW
-    )
+    message = create_envelope(sender, "receiver", "status.read", {"ok": True}, issued_at=NOW)
     altered = copy.deepcopy(message)
     altered["payload"]["body"]["ok"] = False
     assert not verify_envelope(altered, now=NOW + 1)
