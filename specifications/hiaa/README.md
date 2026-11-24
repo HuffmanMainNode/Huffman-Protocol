@@ -54,7 +54,7 @@ ReplayCache is an in-memory, process-local guard. Production deployments need du
 
 - The experimental TCP transport carries signed request/acknowledgement envelopes, but does not provide encryption, TLS peer authentication, peer discovery, durable delivery, or task execution.
 - Ed25519 signatures do not encrypt message contents.
-- Public-key self-identification is not a trust relationship; enrollment and trust roots remain deployment policy.
+- Public-key self-identification is not a trust relationship; the TCP receiver requires an explicit sender allowlist and the sender must pin the expected receiver identity. Enrollment exchange remains operator-managed.
 - Key backup, rotation, revocation, and compromise recovery are not implemented.
 - Timestamp checks require reasonably synchronized clocks.
 - Replay state is volatile and local to one process.
@@ -70,7 +70,7 @@ The Python implementation now includes a TCP request/acknowledgement reference t
 
 ## Experimental TCP transport
 
-The reference package now includes `hiaa_transport.py`, a newline-delimited JSON TCP transport for one signed request and one signed acknowledgement per connection. The receiver verifies the sender signature, intended recipient, timestamp, and local capability policy; it rejects duplicate message IDs through its replay cache. The sender verifies the receiver's signed acknowledgement and confirms that it refers to the original message.
+The reference package now includes `hiaa_transport.py`, a newline-delimited JSON TCP transport for one signed request and one signed acknowledgement per connection. The receiver verifies the sender signature, intended recipient, timestamp, enrolled sender identity, and local capability policy; it rejects duplicate message IDs through its replay cache. The sender verifies the receiver's signed acknowledgement against its pinned expected peer identity and confirms that it refers to the original message.
 
 A minimal receiver can be run as a separate process:
 
@@ -84,12 +84,13 @@ server = HIAARequestServer(
     identity,
     {"status.read"},
     lambda body: {"status": "ready"},
+    trusted_senders={"hiaa:ed25519:<ENROLLED_SENDER_FINGERPRINT>"},
 )
 print(identity.agent_id)
 server.serve_forever()
 ```
 
-A separately installed sender process can load its own operator-managed identity, construct an envelope with `create_envelope`, and call `send_envelope(("127.0.0.1", 8765), envelope)`. The receiver identity must be enrolled or otherwise trusted by the sender's operator; this profile does not provide automatic trust discovery.
+A separately installed sender process can load its own operator-managed identity, construct an envelope with `create_envelope`, and call `send_envelope(("127.0.0.1", 8765), envelope, expected_peer=receiver_agent_id)`. The receiver must configure the sender's exact agent ID in `trusted_senders`; the sender must pin the receiver's expected agent ID as `expected_peer`. These values must be exchanged and verified out of band. This profile does not provide automatic trust discovery.
 
 **Transport security warning:** this initial TCP transport does not encrypt traffic or authenticate the remote host at the TLS layer. Signatures protect message integrity and key possession, not confidentiality. Use loopback, a trusted network, or an independently configured encrypted tunnel. Do not expose the listener directly to an untrusted network.
 
