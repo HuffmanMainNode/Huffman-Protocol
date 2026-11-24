@@ -116,7 +116,7 @@ def send_envelope(
     if (
         not response
         or len(response) > MAX_MESSAGE_BYTES
-        or not response.endswith(b"\\n")
+        or not response.endswith(b"\n")
     ):
         raise ConnectionError("receiver returned an invalid or oversized frame")
     acknowledgement = json.loads(response)
