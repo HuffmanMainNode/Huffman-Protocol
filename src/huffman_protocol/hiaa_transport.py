@@ -66,9 +66,9 @@ class _HIAARequestHandler(socketserver.StreamRequestHandler):
 
     def _write(self, value: dict[str, Any]) -> None:
         self.wfile.write(
-            json.dumps(
-                value, ensure_ascii=False, allow_nan=False, separators=(",", ":")
-            ).encode("utf-8")
+            json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode(
+                "utf-8"
+            )
             + b"\n"
         )
 
@@ -103,9 +103,12 @@ def send_envelope(
     timeout: float = 5.0,
 ) -> dict[str, Any]:
     """Send one signed envelope and verify the receiver's signed acknowledgement."""
-    request = json.dumps(
-        envelope, ensure_ascii=False, allow_nan=False, separators=(",", ":")
-    ).encode("utf-8") + b"\n"
+    request = (
+        json.dumps(envelope, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode(
+            "utf-8"
+        )
+        + b"\n"
+    )
     if len(request) > MAX_MESSAGE_BYTES:
         raise ValueError("message exceeds HIAA transport frame limit")
     with socket.create_connection(address, timeout=timeout) as connection:
@@ -113,30 +116,18 @@ def send_envelope(
         connection.sendall(request)
         with connection.makefile("rb") as stream:
             response = stream.readline(MAX_MESSAGE_BYTES + 1)
-    if (
-        not response
-        or len(response) > MAX_MESSAGE_BYTES
-        or not response.endswith(b"\n")
-    ):
+    if not response or len(response) > MAX_MESSAGE_BYTES or not response.endswith(b"\n"):
         raise ConnectionError("receiver returned an invalid or oversized frame")
     acknowledgement = json.loads(response)
-    if (
-        not isinstance(acknowledgement, dict)
-        or acknowledgement.get("accepted") is False
-    ):
+    if not isinstance(acknowledgement, dict) or acknowledgement.get("accepted") is False:
         raise PermissionError("receiver rejected the HIAA message")
     sender = envelope["payload"]["sender"]
-    if not verify_envelope(
-        acknowledgement, expected_recipient=sender
-    ):
-        raise ConnectionError(
-            "receiver acknowledgement signature or recipient is invalid"
-        )
+    if not verify_envelope(acknowledgement, expected_recipient=sender):
+        raise ConnectionError("receiver acknowledgement signature or recipient is invalid")
     ack_payload = acknowledgement["payload"]
     if (
         ack_payload.get("capability") != "message.ack"
-        or ack_payload.get("body", {}).get("message_id")
-        != envelope["payload"].get("message_id")
+        or ack_payload.get("body", {}).get("message_id") != envelope["payload"].get("message_id")
         or ack_payload.get("body", {}).get("accepted") is not True
     ):
         raise ConnectionError("receiver acknowledgement does not match the request")
