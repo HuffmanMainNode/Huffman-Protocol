@@ -7,7 +7,7 @@ from huffman_protocol.hiaa_message import create_envelope
 from huffman_protocol.hiaa_transport import HIAARequestServer, send_envelope
 
 
-def test_two_independent_identities_exchange_signed_message_over_tcp():
+def test_two_independent_identities_sign_and_verify():
     receiver = AgentIdentity.generate()
     sender = AgentIdentity.generate()
     with HIAARequestServer(
@@ -33,9 +33,7 @@ def test_two_independent_identities_exchange_signed_message_over_tcp():
             )
             assert acknowledgement["payload"]["sender"] == receiver.agent_id
             assert acknowledgement["payload"]["recipient"] == sender.agent_id
-            assert acknowledgement["payload"]["body"]["result"] == {
-                "echo": {"question": "status"}
-            }
+            assert acknowledgement["payload"]["body"]["result"] == {"echo": {"question": "status"}}
         finally:
             server.shutdown()
             worker.join(timeout=2)
