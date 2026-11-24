@@ -48,7 +48,7 @@ Private-key persistence is caller-managed. The implementation does not write key
 
 ## Replay and authorization
 
-ReplayCache is an in-memory, process-local guard. Production deployments need durable, concurrency-safe replay state. A capability label is a request, not a grant. Each receiver must compare it against its own allowlist.
+ReplayCache is an in-memory, process-local guard keyed by the pair of sender identity and message ID. Production deployments need durable, concurrency-safe replay state. A capability label is a request, not a grant. Each receiver must compare it against its own allowlist.
 
 ## Security and implementation limits
 
@@ -94,4 +94,4 @@ A separately installed sender process can load its own operator-managed identity
 
 **Transport security warning:** this initial TCP transport does not encrypt traffic or authenticate the remote host at the TLS layer. Signatures protect message integrity and key possession, not confidentiality. Use loopback, a trusted network, or an independently configured encrypted tunnel. Do not expose the listener directly to an untrusted network.
 
-The loopback integration tests exercise two independently generated identities over an actual TCP socket. They do not yet prove separate-machine deployment, durable replay protection, reconnect policy, key lifecycle, or production network hardening.
+The loopback integration tests exercise two independently generated identities over an actual TCP socket. The current integration test runs both endpoints in one test process; it does not yet prove separate-process or separate-machine deployment, durable replay protection, reconnect policy, key lifecycle, or production network hardening.
