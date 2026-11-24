@@ -15,6 +15,7 @@ def test_two_independent_identities_exchange_signed_message_over_tcp():
         receiver,
         {"status.read"},
         lambda body: {"echo": body},
+        trusted_senders={sender.agent_id},
     ) as server:
         worker = threading.Thread(target=server.serve_forever, daemon=True)
         worker.start()
@@ -25,7 +26,9 @@ def test_two_independent_identities_exchange_signed_message_over_tcp():
                 "status.read",
                 {"question": "status"},
             )
-            acknowledgement = send_envelope(server.server_address, message)
+            acknowledgement = send_envelope(
+                server.server_address, message, expected_peer=receiver.agent_id
+            )
             assert acknowledgement["payload"]["sender"] == receiver.agent_id
             assert acknowledgement["payload"]["recipient"] == sender.agent_id
             assert acknowledgement["payload"]["body"]["result"] == {"echo": {"question": "status"}}
@@ -42,13 +45,16 @@ def test_tcp_receiver_denies_unapproved_capability():
         receiver,
         {"status.read"},
         lambda body: {"unexpected": True},
+        trusted_senders={sender.agent_id},
     ) as server:
         worker = threading.Thread(target=server.serve_forever, daemon=True)
         worker.start()
         try:
             message = create_envelope(sender, receiver.agent_id, "admin.delete", {"target": "all"})
             with pytest.raises(PermissionError):
-                send_envelope(server.server_address, message)
+                send_envelope(
+                    server.server_address, message, expected_peer=receiver.agent_id
+                )
         finally:
             server.shutdown()
             worker.join(timeout=2)
