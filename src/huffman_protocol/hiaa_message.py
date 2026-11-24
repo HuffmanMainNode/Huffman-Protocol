@@ -88,7 +88,9 @@ def verify_envelope(
         current = int(time.time()) if now is None else now
         if issued_at > current + 30 or current - issued_at > max_age:
             return False
-        return verify_signature(public_key, _DOMAIN + canonical_payload(payload), signature)
+        return verify_signature(
+            public_key, _DOMAIN + canonical_payload(payload), signature
+        )
     except (KeyError, TypeError, ValueError):
         return False
 
