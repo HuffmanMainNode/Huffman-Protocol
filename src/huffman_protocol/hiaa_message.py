@@ -80,6 +80,8 @@ def verify_envelope(
                 return False
         if not isinstance(payload.get("body"), dict) or max_age < 0:
             return False
+        if expected_recipient is not None and payload["recipient"] != expected_recipient:
+            return False
         issued_at = payload["issued_at"]
         if not isinstance(issued_at, int) or isinstance(issued_at, bool):
             return False
@@ -126,7 +128,7 @@ def authorize(
     envelope: dict[str, Any], allowed_capabilities: set[str], *, now: int | None = None
 ) -> bool:
     return (
-        verify_envelope(envelope, now=now)
+        verify_envelope(envelope, now=now, expected_recipient=expected_recipient)
         and isinstance(envelope["payload"].get("capability"), str)
         and envelope["payload"]["capability"] in allowed_capabilities
     )
