@@ -43,6 +43,7 @@ class _HIAARequestHandler(socketserver.StreamRequestHandler):
             envelope,
             self.server.allowed_capabilities,
             expected_recipient=self.server.identity.agent_id,
+            trusted_senders=self.server.trusted_senders,
         ):
             self._write({"accepted": False, "error": "rejected"})
             return
@@ -87,10 +88,12 @@ class HIAARequestServer(socketserver.ThreadingTCPServer):
         allowed_capabilities: set[str],
         handler: Callable[[dict[str, Any]], dict[str, Any]],
         *,
+        trusted_senders: set[str],
         replay_cache: ReplayCache | None = None,
     ) -> None:
         self.identity = identity
         self.allowed_capabilities = set(allowed_capabilities)
+        self.trusted_senders = set(trusted_senders)
         self.handler = handler
         self.replay_cache = replay_cache or ReplayCache()
         super().__init__(address, _HIAARequestHandler)
@@ -100,9 +103,10 @@ def send_envelope(
     address: tuple[str, int],
     envelope: dict[str, Any],
     *,
+    expected_peer: str,
     timeout: float = 5.0,
 ) -> dict[str, Any]:
-    """Send one signed envelope and verify the receiver's signed acknowledgement."""
+    """Send one signed envelope and verify the configured peer's acknowledgement."""
     request = (
         json.dumps(envelope, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode(
             "utf-8"
@@ -122,7 +126,9 @@ def send_envelope(
     if not isinstance(acknowledgement, dict) or acknowledgement.get("accepted") is False:
         raise PermissionError("receiver rejected the HIAA message")
     sender = envelope["payload"]["sender"]
-    if not verify_envelope(acknowledgement, expected_recipient=sender):
+    if not verify_envelope(
+        acknowledgement, expected_recipient=sender, expected_sender=expected_peer
+    ):
         raise ConnectionError("receiver acknowledgement signature or recipient is invalid")
     ack_payload = acknowledgement["payload"]
     if (
