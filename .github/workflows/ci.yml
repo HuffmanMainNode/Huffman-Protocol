@@ -52,6 +52,19 @@ jobs:
           /tmp/huffman-wheel-test/bin/python -m pip install dist/*.whl
           /tmp/huffman-wheel-test/bin/huffman-protocol --help
           /tmp/huffman-wheel-test/bin/python -c "from importlib.resources import files; p = files('huffman_protocol').joinpath('schemas', 'evidence.schema.json'); assert p.is_file(); print('Evidence schema packaged:', p)"
+      - name: Generate distribution checksums
+        if: matrix.python-version == "3.12"
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS
+      - name: Upload source, wheel, and checksum artifacts
+        if: matrix.python-version == "3.12"
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: huffman-protocol-0.1.0-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
 
   a2a-agent-card:
     name: A2A 1.0 AgentCard adapter
