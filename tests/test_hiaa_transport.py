@@ -69,13 +69,16 @@ def test_tcp_receiver_rejects_message_addressed_to_another_agent():
         receiver,
         {"status.read"},
         lambda body: {"unexpected": True},
+        trusted_senders={sender.agent_id},
     ) as server:
         worker = threading.Thread(target=server.serve_forever, daemon=True)
         worker.start()
         try:
             message = create_envelope(sender, other.agent_id, "status.read", {"question": "status"})
             with pytest.raises(PermissionError):
-                send_envelope(server.server_address, message)
+                send_envelope(
+                    server.server_address, message, expected_peer=receiver.agent_id
+                )
         finally:
             server.shutdown()
             worker.join(timeout=2)
