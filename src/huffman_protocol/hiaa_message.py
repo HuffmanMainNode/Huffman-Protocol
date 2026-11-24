@@ -4,6 +4,7 @@ import hashlib
 import json
 import threading
 import time
+import uuid
 from typing import Any
 from huffman_protocol.hiaa_identity import AgentIdentity, verify_signature
 
@@ -24,7 +25,7 @@ def create_envelope(identity: AgentIdentity, recipient: str, capability: str, bo
     timestamp = int(time.time()) if issued_at is None else issued_at
     payload = {
         "version": "0.1.0",
-        "message_id": message_id or hashlib.sha256(identity.public_bytes + str(timestamp).encode() + canonical_payload(body)).hexdigest(),
+        "message_id": message_id or uuid.uuid4().hex,
         "sender": identity.agent_id,
         "recipient": recipient,
         "capability": capability,
@@ -37,6 +38,11 @@ def verify_envelope(envelope: dict[str, Any], *, now: int | None = None, max_age
     try:
         payload, public_key, signature = envelope["payload"], envelope["public_key"], envelope["signature"]
         if not isinstance(payload, dict) or payload.get("version") != "0.1.0" or payload.get("sender") != _agent_id(public_key):
+            return False
+        for field in ("message_id", "recipient", "capability"):
+            if not isinstance(payload.get(field), str) or not payload[field].strip():
+                return False
+        if not isinstance(payload.get("body"), dict) or max_age < 0:
             return False
         issued_at = payload["issued_at"]
         if not isinstance(issued_at, int) or isinstance(issued_at, bool):
@@ -61,7 +67,9 @@ class ReplayCache:
         if not verify_envelope(envelope, now=now):
             return False
         current = int(time.time()) if now is None else now
-        message_id = envelope["payload"]["message_id"]
+        message_id = envelope["payload"].get("message_id")
+        if not isinstance(message_id, str) or not message_id:
+            return False
         with self._lock:
             self._seen = {key: expiry for key, expiry in self._seen.items() if expiry >= current}
             if message_id in self._seen:
