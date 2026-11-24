@@ -7,7 +7,7 @@ import time
 from typing import Any
 from huffman_protocol.hiaa_identity import AgentIdentity, verify_signature
 
-_DOMAIN = b"HUFFMAN-HIAA-MESSAGE-V0.1\\x00"
+_DOMAIN = b"HUFFMAN-HIAA-MESSAGE-V0.1\x00"
 
 def canonical_payload(payload: dict[str, Any]) -> bytes:
     """Profile-specific deterministic JSON; this is not RFC 8785 JCS."""
