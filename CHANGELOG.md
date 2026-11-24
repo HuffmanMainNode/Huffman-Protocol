@@ -4,11 +4,9 @@ All notable project changes are recorded here. This file tracks repository chang
 
 ## Unreleased
 
-### Release candidate preparation
-- Updated CI to retain the Python source distribution, wheel, and SHA-256 checksums as a downloadable workflow artifact.
-- Publication remains gated on a successful workflow run for the exact release commit.
-
-## Unreleased (package version 0.1.0)
+### Release preparation
+- CI now builds source and wheel distributions, generates SHA-256 checksums, and uploads them as a downloadable workflow artifact when the Python 3.12 matrix job succeeds.
+- Registry maintenance date refreshed to 2026-11-24.
 
 ### Added
 - HIAA v0.1 experimental Ed25519 identity and signed-message reference implementation.
@@ -27,4 +25,4 @@ All notable project changes are recorded here. This file tracks repository chang
 - H-PACK verifies local evidence structure and artifact digests; it does not independently establish publisher identity or rerun tests.
 - A2A support is local AgentCard structural validation, not remote task exchange or signature verification.
 
-A release entry should be added only when a versioned source revision, release artifacts, and corresponding CI evidence are published.
+A versioned release entry must be added only after the exact tagged source revision passes CI and the source distribution, wheel, and checksum file are attached to the GitHub release.
