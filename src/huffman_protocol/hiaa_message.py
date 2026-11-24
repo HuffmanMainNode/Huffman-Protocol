@@ -11,7 +11,7 @@ from typing import Any
 
 from huffman_protocol.hiaa_identity import AgentIdentity, verify_signature
 
-_DOMAIN = b"HUFFMAN-HIAA-MESSAGE-V0.1\x00"
+_DOMAIN = b"HUFFMAN-HIAA-MESSAGE-V0.1\\x00"
 
 
 def canonical_payload(payload: dict[str, Any]) -> bytes:
@@ -123,11 +123,7 @@ class ReplayCache:
             return False
         replay_key = (sender, message_id)
         with self._lock:
-            self._seen = {
-                key: expiry
-                for key, expiry in self._seen.items()
-                if expiry >= current
-            }
+            self._seen = {key: expiry for key, expiry in self._seen.items() if expiry >= current}
             if replay_key in self._seen:
                 return False
             if len(self._seen) >= self.capacity:
@@ -147,10 +143,7 @@ def authorize(
 ) -> bool:
     return (
         verify_envelope(envelope, now=now, expected_recipient=expected_recipient)
-        and (
-            trusted_senders is None
-            or envelope["payload"].get("sender") in trusted_senders
-        )
+        and (trusted_senders is None or envelope["payload"].get("sender") in trusted_senders)
         and isinstance(envelope["payload"].get("capability"), str)
         and envelope["payload"]["capability"] in allowed_capabilities
     )
