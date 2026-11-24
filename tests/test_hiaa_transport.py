@@ -7,7 +7,7 @@ from huffman_protocol.hiaa_message import create_envelope
 from huffman_protocol.hiaa_transport import HIAARequestServer, send_envelope
 
 
-def test_two_independent_identities_sign_and_verify():
+def test_two_independent_identities_exchange_signed_message_over_tcp():
     receiver = AgentIdentity.generate()
     sender = AgentIdentity.generate()
     with HIAARequestServer(
