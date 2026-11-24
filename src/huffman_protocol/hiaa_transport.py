@@ -21,10 +21,15 @@ from huffman_protocol.hiaa_message import (
 )
 
 MAX_MESSAGE_BYTES = 1_048_576
+REQUEST_TIMEOUT_SECONDS = 5.0
 
 
 class _HIAARequestHandler(socketserver.StreamRequestHandler):
-    server: "HIAARequestServer"
+    server: HIAARequestServer
+
+    def setup(self) -> None:
+        self.request.settimeout(REQUEST_TIMEOUT_SECONDS)
+        super().setup()
 
     def handle(self) -> None:
         raw = self.rfile.readline(MAX_MESSAGE_BYTES + 1)
@@ -50,6 +55,7 @@ class _HIAARequestHandler(socketserver.StreamRequestHandler):
         if not self.server.replay_cache.accept(envelope):
             self._write({"accepted": False, "error": "replay_or_expired"})
             return
+
         sender = envelope["payload"]["sender"]
         message_id = envelope["payload"]["message_id"]
         try:
@@ -57,6 +63,7 @@ class _HIAARequestHandler(socketserver.StreamRequestHandler):
         except Exception:
             self._write({"accepted": False, "error": "handler_failed"})
             return
+
         acknowledgement = create_envelope(
             self.server.identity,
             sender,
@@ -66,12 +73,13 @@ class _HIAARequestHandler(socketserver.StreamRequestHandler):
         self._write(acknowledgement)
 
     def _write(self, value: dict[str, Any]) -> None:
-        self.wfile.write(
-            json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode(
-                "utf-8"
-            )
-            + b"\n"
-        )
+        encoded = json.dumps(
+            value,
+            ensure_ascii=False,
+            allow_nan=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        self.wfile.write(encoded + b"\n")
 
 
 class HIAARequestServer(socketserver.ThreadingTCPServer):
@@ -104,37 +112,47 @@ def send_envelope(
     envelope: dict[str, Any],
     *,
     expected_peer: str,
-    timeout: float = 5.0,
+    timeout: float = REQUEST_TIMEOUT_SECONDS,
 ) -> dict[str, Any]:
     """Send one signed envelope and verify the configured peer's acknowledgement."""
     request = (
-        json.dumps(envelope, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode(
-            "utf-8"
-        )
+        json.dumps(
+            envelope,
+            ensure_ascii=False,
+            allow_nan=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
         + b"\n"
     )
     if len(request) > MAX_MESSAGE_BYTES:
         raise ValueError("message exceeds HIAA transport frame limit")
+
     with socket.create_connection(address, timeout=timeout) as connection:
         connection.settimeout(timeout)
         connection.sendall(request)
         with connection.makefile("rb") as stream:
             response = stream.readline(MAX_MESSAGE_BYTES + 1)
+
     if not response or len(response) > MAX_MESSAGE_BYTES or not response.endswith(b"\n"):
         raise ConnectionError("receiver returned an invalid or oversized frame")
     acknowledgement = json.loads(response)
     if not isinstance(acknowledgement, dict) or acknowledgement.get("accepted") is False:
         raise PermissionError("receiver rejected the HIAA message")
+
     sender = envelope["payload"]["sender"]
     if not verify_envelope(
-        acknowledgement, expected_recipient=sender, expected_sender=expected_peer
+        acknowledgement,
+        expected_recipient=sender,
+        expected_sender=expected_peer,
     ):
         raise ConnectionError("receiver acknowledgement signature or recipient is invalid")
+
     ack_payload = acknowledgement["payload"]
+    ack_body = ack_payload.get("body", {})
     if (
         ack_payload.get("capability") != "message.ack"
-        or ack_payload.get("body", {}).get("message_id") != envelope["payload"].get("message_id")
-        or ack_payload.get("body", {}).get("accepted") is not True
+        or ack_body.get("message_id") != envelope["payload"].get("message_id")
+        or ack_body.get("accepted") is not True
     ):
         raise ConnectionError("receiver acknowledgement does not match the request")
     return acknowledgement
