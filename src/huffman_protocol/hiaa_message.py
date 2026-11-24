@@ -61,7 +61,11 @@ def create_envelope(
 
 
 def verify_envelope(
-    envelope: dict[str, Any], *, now: int | None = None, max_age: int = 300
+    envelope: dict[str, Any],
+    *,
+    now: int | None = None,
+    max_age: int = 300,
+    expected_recipient: str | None = None,
 ) -> bool:
     try:
         payload, public_key, signature = (
@@ -127,7 +131,11 @@ class ReplayCache:
 
 
 def authorize(
-    envelope: dict[str, Any], allowed_capabilities: set[str], *, now: int | None = None
+    envelope: dict[str, Any],
+    allowed_capabilities: set[str],
+    *,
+    now: int | None = None,
+    expected_recipient: str | None = None,
 ) -> bool:
     return (
         verify_envelope(envelope, now=now, expected_recipient=expected_recipient)
