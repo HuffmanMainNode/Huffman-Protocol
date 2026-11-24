@@ -66,7 +66,9 @@ class _HIAARequestHandler(socketserver.StreamRequestHandler):
 
     def _write(self, value: dict[str, Any]) -> None:
         self.wfile.write(
-            json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode("utf-8")
+            json.dumps(
+                value, ensure_ascii=False, allow_nan=False, separators=(",", ":")
+            ).encode("utf-8")
             + b"\n"
         )
 
@@ -114,10 +116,15 @@ def send_envelope(
     if not response or len(response) > MAX_MESSAGE_BYTES or not response.endswith(b"\n"):
         raise ConnectionError("receiver returned an invalid or oversized frame")
     acknowledgement = json.loads(response)
-    if not isinstance(acknowledgement, dict) or acknowledgement.get("accepted") is False:
+    if (
+        not isinstance(acknowledgement, dict)
+        or acknowledgement.get("accepted") is False
+    ):
         raise PermissionError("receiver rejected the HIAA message")
     sender = envelope["payload"]["sender"]
-    if not verify_envelope(acknowledgement, expected_recipient=sender):
+    if not verify_envelope(
+        acknowledgement, expected_recipient=sender
+    ):
         raise ConnectionError("receiver acknowledgement signature or recipient is invalid")
     ack_payload = acknowledgement["payload"]
     if (
