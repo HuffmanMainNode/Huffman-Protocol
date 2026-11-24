@@ -33,10 +33,10 @@
     "offline-conformance-vector-schema-validation",
     "hiaa-ed25519-agent-identity-primitives",
     "hiaa-signed-message-envelope-verification",
-    "hiaa-timestamp-and-process-local-replay-checks",
     "hiaa-receiver-local-capability-authorization",
     "hiaa-experimental-newline-json-tcp-transport",
-    "hiaa-loopback-peer-integration-tests"
+    "hiaa-loopback-peer-integration-tests",
+    "hiaa-sender-scoped-process-local-replay-checks"
   ],
   "not_yet_implemented": [
     "conformance-test-execution",
@@ -54,7 +54,8 @@
     "hiaa-production-network-hardening-and-cross-machine-validation",
     "hiaa-key-enrollment-rotation-and-revocation",
     "hiaa-durable-replay-journal",
-    "hiaa-cross-implementation-interoperability-tests"
+    "hiaa-cross-implementation-interoperability-tests",
+    "hiaa-separate-process-and-cross-machine-deployment-tests"
   ],
   "execution_policy": {
     "default_access": "read-only",
@@ -94,7 +95,7 @@
     "server_required": false,
     "github_required_at_runtime": false,
     "validation_requires_network": false,
-    "opens_network_sockets": false,
+    "opens_network_sockets": true,
     "executes_third_party_code": false,
     "agent_state_storage": "caller-managed-local-state",
     "input_limits": {
@@ -104,7 +105,8 @@
       "evidence_artifact_bytes": 134217728,
       "evidence_total_artifact_bytes": 536870912,
       "json_nesting_depth": 64
-    }
+    },
+    "network_socket_scope": "Only when the experimental HIAA TCP transport is explicitly invoked; metadata and evidence validation remain offline."
   },
   "integrations": {
     "a2a": {
