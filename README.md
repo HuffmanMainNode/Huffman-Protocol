@@ -83,7 +83,7 @@ ruff format --check .
 ruff check .
 ```
 
-The core validator and evidence verifier are offline. Optional A2A card validation uses the official A2A SDK to validate a local A2A 1.0 AgentCard; it does not contact the agent or verify signatures. The experimental HIAA identity and message primitives use the declared `cryptography` dependency; see the [HIAA profile](specifications/hiaa/README.md) for limitations. They do not provide network transport or a complete agent runtime.
+The core validator and evidence verifier are offline. Optional A2A card validation uses the official A2A SDK to validate a local A2A 1.0 AgentCard; it does not contact the agent or verify signatures. The experimental HIAA identity and message primitives use the declared `cryptography` dependency; see the [HIAA profile](specifications/hiaa/README.md) for limitations. They include an experimental plaintext TCP transport and local loopback tests, but not a complete agent runtime or production network security.
 
 ## Optional A2A 1.0 card validation
 
