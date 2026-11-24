@@ -113,7 +113,11 @@ def send_envelope(
         connection.sendall(request)
         with connection.makefile("rb") as stream:
             response = stream.readline(MAX_MESSAGE_BYTES + 1)
-    if not response or len(response) > MAX_MESSAGE_BYTES or not response.endswith(b"\n"):
+    if (
+        not response
+        or len(response) > MAX_MESSAGE_BYTES
+        or not response.endswith(b"\\n")
+    ):
         raise ConnectionError("receiver returned an invalid or oversized frame")
     acknowledgement = json.loads(response)
     if (
