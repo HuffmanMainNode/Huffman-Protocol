@@ -38,6 +38,21 @@ This roadmap records intended work, not completed capabilities. Checkboxes are i
 - [ ] Publish limitations and reproducible results.
 - [ ] Add safe, explicit network adapters only after threat-model review.
 
+## HIAA v0.1 experimental reference implementation
+
+- [x] Define Ed25519 agent identity and key-derived agent identifiers.
+- [x] Define signed deterministic-JSON message envelopes with domain separation.
+- [x] Implement timestamp checks, recipient binding, sender-scoped replay checks, and receiver-controlled capability allowlists.
+- [x] Implement an experimental plaintext TCP request/acknowledgement reference transport.
+- [x] Add loopback socket integration tests and document trust assumptions.
+- [ ] Add separate-process and separate-machine interoperability tests.
+- [ ] Design durable, concurrency-safe replay state and reconnect behavior.
+- [ ] Define operator-managed enrollment, key persistence, rotation, revocation, and recovery procedures.
+- [ ] Complete an independent threat-model and implementation review.
+- [ ] Select and test a reviewed encrypted transport profile before any untrusted-network deployment.
+
+HIAA v0.1 remains experimental. The implemented transport is not a production agent runtime and does not provide confidentiality, TLS peer authentication, durable replay protection, automatic discovery, or key lifecycle management. Its successful CI tests are scoped implementation evidence, not independent interoperability or security certification.
+
 ## Stage 4: Decentralized adoption
 - [ ] Define a portable, content-addressed capability exchange format.
 - [ ] Define peer discovery and transport profiles without requiring a central service.
