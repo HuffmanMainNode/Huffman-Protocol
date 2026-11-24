@@ -52,7 +52,7 @@ ReplayCache is an in-memory, process-local guard. Production deployments need du
 
 ## Security and implementation limits
 
-- No network transport, peer discovery, handshake, encryption, or task execution is implemented.
+- The experimental TCP transport carries signed request/acknowledgement envelopes, but does not provide encryption, TLS peer authentication, peer discovery, durable delivery, or task execution.
 - Ed25519 signatures do not encrypt message contents.
 - Public-key self-identification is not a trust relationship; enrollment and trust roots remain deployment policy.
 - Key backup, rotation, revocation, and compromise recovery are not implemented.
