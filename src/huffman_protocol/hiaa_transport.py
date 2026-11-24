@@ -125,7 +125,9 @@ def send_envelope(
     if not verify_envelope(
         acknowledgement, expected_recipient=sender
     ):
-        raise ConnectionError("receiver acknowledgement signature or recipient is invalid")
+        raise ConnectionError(
+            "receiver acknowledgement signature or recipient is invalid"
+        )
     ack_payload = acknowledgement["payload"]
     if (
         ack_payload.get("capability") != "message.ack"
