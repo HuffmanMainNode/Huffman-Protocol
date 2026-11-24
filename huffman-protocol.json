@@ -30,7 +30,11 @@
     "evidence-manifest-symlink-rejection",
     "evidence-package-collection-size-limits",
     "offline-a2a-v1-agent-card-structural-validation",
-    "offline-conformance-vector-schema-validation"
+    "offline-conformance-vector-schema-validation",
+    "hiaa-ed25519-agent-identity-primitives",
+    "hiaa-signed-message-envelope-verification",
+    "hiaa-timestamp-and-process-local-replay-checks",
+    "hiaa-receiver-local-capability-authorization"
   ],
   "not_yet_implemented": [
     "conformance-test-execution",
@@ -44,7 +48,11 @@
     "remote-agent-coordination",
     "automatic-registry-crawling",
     "a2a-http-jsonrpc-task-exchange",
-    "a2a-agent-card-jws-verification"
+    "a2a-agent-card-jws-verification",
+    "hiaa-network-transport-and-peer-handshake",
+    "hiaa-key-enrollment-rotation-and-revocation",
+    "hiaa-durable-replay-journal",
+    "hiaa-cross-implementation-interoperability-tests"
   ],
   "execution_policy": {
     "default_access": "read-only",
@@ -68,7 +76,8 @@
     ],
     "example_evidence_package": "examples/evidence-package",
     "optional_extras": {
-      "a2a": "a2a-sdk>=1.3.0,<2"
+      "a2a": "a2a-sdk>=1.3.0,<2",
+      "hiaa": "cryptography>=43,<47"
     }
   },
   "specifications": {
@@ -76,7 +85,8 @@
     "conformance": "specifications/conformance/README.md",
     "evidence": "specifications/evidence/README.md",
     "versioning": "specifications/VERSIONING.md",
-    "a2a": "specifications/a2a/README.md"
+    "a2a": "specifications/a2a/README.md",
+    "hiaa": "specifications/hiaa/README.md"
   },
   "runtime": {
     "mode": "local-library-and-cli",
