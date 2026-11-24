@@ -66,3 +66,31 @@ ReplayCache is an in-memory, process-local guard. Production deployments need du
 A conforming implementation must demonstrate independent key generation, stable key-derived identifiers, cross-receiver signature verification, tamper rejection, sender mismatch rejection, timestamp enforcement, duplicate-message rejection, and receiver-controlled capability denial.
 
 This initial Python implementation is a reference primitive, not a complete multi-device agent runtime. A later transport profile must demonstrate two independently installed processes exchanging messages over a real transport, including reconnect and failure behavior, before claiming peer-to-peer operation.
+
+
+## Experimental TCP transport
+
+The reference package now includes `hiaa_transport.py`, a newline-delimited JSON TCP transport for one signed request and one signed acknowledgement per connection. The receiver verifies the sender signature, intended recipient, timestamp, and local capability policy; it rejects duplicate message IDs through its replay cache. The sender verifies the receiver's signed acknowledgement and confirms that it refers to the original message.
+
+A minimal receiver can be run as a separate process:
+
+```python
+from huffman_protocol.hiaa_identity import AgentIdentity
+from huffman_protocol.hiaa_transport import HIAARequestServer
+
+identity = AgentIdentity.generate()
+server = HIAARequestServer(
+    ("127.0.0.1", 8765),
+    identity,
+    {"status.read"},
+    lambda body: {"status": "ready"},
+)
+print(identity.agent_id)
+server.serve_forever()
+```
+
+A separately installed sender process can load its own operator-managed identity, construct an envelope with `create_envelope`, and call `send_envelope(("127.0.0.1", 8765), envelope)`. The receiver identity must be enrolled or otherwise trusted by the sender's operator; this profile does not provide automatic trust discovery.
+
+**Transport security warning:** this initial TCP transport does not encrypt traffic or authenticate the remote host at the TLS layer. Signatures protect message integrity and key possession, not confidentiality. Use loopback, a trusted network, or an independently configured encrypted tunnel. Do not expose the listener directly to an untrusted network.
+
+The loopback integration tests exercise two independently generated identities over an actual TCP socket. They do not yet prove separate-machine deployment, durable replay protection, reconnect policy, key lifecycle, or production network hardening.
