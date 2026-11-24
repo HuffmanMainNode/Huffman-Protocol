@@ -41,6 +41,7 @@ This repository is an early-stage project. It does not yet provide a security ce
 - [Evidence model](specifications/evidence/README.md)
 - [Schema versioning policy](specifications/VERSIONING.md)
 - [A2A 1.0 integration profile](specifications/a2a/README.md)
+- [HIAA independent agent architecture](specifications/hiaa/README.md)
 - [Agent instructions](AGENTS.md)
 - [Governance](GOVERNANCE.md)
 - [Security policy](SECURITY.md)
@@ -82,7 +83,7 @@ ruff format --check .
 ruff check .
 ```
 
-The core validator and evidence verifier are offline. Optional A2A card validation uses the official A2A SDK to validate a local A2A 1.0 AgentCard; it does not contact the agent or verify signatures.
+The core validator and evidence verifier are offline. Optional A2A card validation uses the official A2A SDK to validate a local A2A 1.0 AgentCard; it does not contact the agent or verify signatures. The experimental HIAA identity and message primitives use the declared `cryptography` dependency; see the [HIAA profile](specifications/hiaa/README.md) for limitations. They include an experimental plaintext TCP transport and local loopback tests, but not a complete agent runtime or production network security.
 
 ## Optional A2A 1.0 card validation
 
