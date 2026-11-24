@@ -27,11 +27,11 @@ class AgentIdentity:
     private_key: Ed25519PrivateKey
 
     @classmethod
-    def generate(cls) -> "AgentIdentity":
+    def generate(cls) -> AgentIdentity:
         return cls(Ed25519PrivateKey.generate())
 
     @classmethod
-    def from_private_bytes(cls, value: bytes) -> "AgentIdentity":
+    def from_private_bytes(cls, value: bytes) -> AgentIdentity:
         return cls(Ed25519PrivateKey.from_private_bytes(value))
 
     @property
