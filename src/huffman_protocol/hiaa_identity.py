@@ -62,9 +62,7 @@ class AgentIdentity:
 
 def verify_signature(public_key: str, message: bytes, signature: str) -> bool:
     try:
-        Ed25519PublicKey.from_public_bytes(_dec(public_key)).verify(
-            _dec(signature), message
-        )
+        Ed25519PublicKey.from_public_bytes(_dec(public_key)).verify(_dec(signature), message)
         return True
     except (ValueError, TypeError, InvalidSignature):
         return False
